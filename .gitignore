@@ -73,9 +73,6 @@ env/
 # VSCode
 .vscode/
 
-# Data
-data/
-
 # model checkpoints and saved models
 *.h5
 saved_models/
@@ -86,7 +83,3 @@ logs/
 
 # MacOS
 .DS_Store
-
-# Environment variables
-.env*
-.venv/
