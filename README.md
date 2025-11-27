@@ -31,28 +31,34 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-2. Install the core scientific stack:
+1. Install dependencies (inside the virtual environment):
 
 ```bash
-python -m pip install --upgrade pip setuptools wheel
-pip install numpy scipy pandas matplotlib scikit-learn seaborn statsmodels jupyterlab
+python -m pip install --upgrade pip
+pip install -r requirements-macos.txt
 ```
 
-3. Install PyTorch with Metal (example — you ran this successfully):
+3. Install PyTorch with Metal (if on Apple Silicon):
 
 ```bash
 pip3 install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 ```
 
-4. Verify PyTorch + MPS (Metal) availability:
+4. Verify PyTorch + TensorFlow (Metal) availability:
 
-Run the provided test script:
+Run the provided test script for PyTorch:
 
 ```bash
 python code/test_pytorch.py
 ```
 
-5. Open the notebook server and run the example:
+And for TensorFlow:
+
+```bash
+python code/test_tensorflow.py
+```
+
+1. Open the notebook server and run the example:
 
 ```bash
 jupyter lab

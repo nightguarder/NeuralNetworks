@@ -1,4 +1,3 @@
-```pip-requirements
 # For Apple Silicon (M1/M2) — pip-style requirements
 # This file is a general-purpose list. For the latest PyTorch wheel for your system
 # use the official selector: https://pytorch.org/get-started/locally/
@@ -12,7 +11,8 @@ seaborn
 statsmodels
 jupyterlab
 
-# Recommended deep-learning framework for this course: PyTorch (see requirements-pytorch.txt)
+# Recommended deep-learning framework for this course: 
+# 1. PyTorch 
 # If you explicitly want Apple-accelerated PyTorch builds, follow https://pytorch.org/get-started/locally/
 # Example PyTorch packages (may need platform-specific flags):
 torch
@@ -20,3 +20,6 @@ torchvision
 torchaudio
 # Pytorch with Metal support (Apple Silicon):
 # pip3 install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+# 2. TensorFlow (alternative to PyTorch)
+tensorflow-macos
+tensorflow-metal # plugin for Apple Silicon
