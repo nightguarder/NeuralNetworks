@@ -51,11 +51,13 @@ pip3 install --pre torch torchvision torchaudio --extra-index-url https://downlo
 ### 4. Verify Installation
 
 Test PyTorch:
+
 ```bash
 python code/test_pytorch.py
 ```
 
 Test TensorFlow:
+
 ```bash
 python code/test_tensorflow.py
 ```
@@ -75,19 +77,23 @@ Start with `notebooks/simple_mlp.ipynb` or explore the lectures.
 Based on the [SYLLABUS.md](SYLLABUS.md), the course covers:
 
 1. **Neural Network Fundamentals**
+
    - Architecture, activation functions, layer types
    - Forward/backward propagation
 
 2. **Training & Optimization**
+
    - Loss functions, gradient descent variants (SGD, Adam)
    - Learning rate scheduling
 
 3. **Regularization Techniques** (Lecture 4)
+
    - L1/L2 regularization, dropout
    - Early stopping, batch normalization
    - Preventing overfitting
 
 4. **Advanced Architectures**
+
    - Convolutional Neural Networks (CNNs)
    - Recurrent Neural Networks (RNNs)
    - Long Short-Term Memory (LSTMs)
@@ -104,21 +110,26 @@ Based on the [SYLLABUS.md](SYLLABUS.md), the course covers:
 **Location:** [`project/ev_project/`](project/ev_project/)
 
 ### Project Goal
+
 Predict Electric Vehicle (EV) charging behavior to optimize charging infrastructure and energy management.
 
 ### Current Status
+
 ✅ **Phase 1: Classical ML Models (Complete)**
+
 - Implemented and evaluated Ridge, Random Forest, XGBoost, and Keras NN
 - Best performance: **Random Forest** with R² = 0.61 (Duration), R² = 0.24 (Energy)
 - See [`project/ev_project/README.md`](project/ev_project/README.md) for details
 
 ### Key Achievements
+
 - Comprehensive data analysis (6,880 charging sessions)
 - Feature engineering (temporal encodings, categorical features)
 - Model comparison with month-wise validation
 - Visualization suite for prediction analysis
 
 ### Next Steps
+
 - Implement regularization techniques from Lecture 4
 - Add LSTM/RNN models following course material
 - Incorporate weather and traffic data
@@ -128,13 +139,13 @@ Predict Electric Vehicle (EV) charging behavior to optimize charging infrastruct
 
 ## 📖 Lectures
 
-| Notebook | Topic | Key Concepts |
-|----------|-------|--------------|
-| `NN_Lecture1_Basics.ipynb` | Introduction | Perceptron, activation functions |
-| `NN_Lecture2_Graphics_and_Data.ipynb` | Data handling | Visualization, preprocessing |
-| `NN_Lecture3_Neuro_get_started.ipynb` | Getting started | Keras basics, model building |
-| `NN_Lecture3_Part2_Metaparameters.ipynb` | Hyperparameters | Learning rate, early stopping |
-| `NN_Lecture4_Regularisation.ipynb` | **Regularization** | L1/L2, dropout, overfitting |
+| Notebook                                 | Topic              | Key Concepts                     |
+| ---------------------------------------- | ------------------ | -------------------------------- |
+| `NN_Lecture1_Basics.ipynb`               | Introduction       | Perceptron, activation functions |
+| `NN_Lecture2_Graphics_and_Data.ipynb`    | Data handling      | Visualization, preprocessing     |
+| `NN_Lecture3_Neuro_get_started.ipynb`    | Getting started    | Keras basics, model building     |
+| `NN_Lecture3_Part2_Metaparameters.ipynb` | Hyperparameters    | Learning rate, early stopping    |
+| `NN_Lecture4_Regularisation.ipynb`       | **Regularization** | L1/L2, dropout, overfitting      |
 
 ---
 
@@ -152,14 +163,14 @@ Predict Electric Vehicle (EV) charging behavior to optimize charging infrastruct
 
 **Current Best Models (Test Set):**
 
-| Target | Model | RMSE | MAE | R² |
-|--------|-------|------|-----|-----|
+| Target   | Model         | RMSE  | MAE  | R²   |
+| -------- | ------------- | ----- | ---- | ---- |
 | Duration | Random Forest | 11.38 | 3.45 | 0.60 |
-| Duration | Keras NN | 8.38 | 3.25 | 0.61 |
-| Energy | Random Forest | 10.41 | 6.59 | 0.24 |
-| Energy | XGBoost | 10.96 | 7.01 | 0.15 |
+| Duration | Keras NN      | 8.38  | 3.25 | 0.61 |
+| Energy   | Random Forest | 10.41 | 6.59 | 0.24 |
+| Energy   | XGBoost       | 10.96 | 7.01 | 0.15 |
 
-*Full results and analysis in `project/ev_project/3_Modeling_Results.md`*
+_Full results and analysis in `project/ev_project/3_Modeling_Results.md`_
 
 ---
 
@@ -174,6 +185,7 @@ Predict Electric Vehicle (EV) charging behavior to optimize charging infrastruct
 ## 🎓 Learning Outcomes
 
 By completing this course and project, students will:
+
 - ✅ Understand neural network architectures and training
 - ✅ Implement models using Keras and PyTorch
 - ✅ Apply regularization techniques to prevent overfitting
