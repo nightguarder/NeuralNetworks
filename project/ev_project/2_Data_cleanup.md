@@ -38,6 +38,16 @@ This document captures the agreed data-cleaning decisions for the Trondheim EV c
 
 - Keep and refresh convenience columns: `Start_plugin_hour`, `End_plugout_hour`, `weekdays_plugin`, `month_plugin` from timestamps to avoid drift.
 
+5. Handle missing account ownership
+
+- **Shared_ID Column**: All values were NaN (empty) in raw data
+- **Decision**: Replace NaN with `"Private"` to indicate non-shared/individual accounts
+- **Rationale**:
+  - Current dataset contains only private EV users (all User_type = "Private")
+  - Filling NaN provides semantic clarity: "Private" = individual owner, future "Shared" = shared account
+  - Prevents missing values from causing issues in downstream analysis
+  - Enables future distinction between account ownership types as data evolves
+
 ---
 
 ## February Anomaly (Fewer Sessions)

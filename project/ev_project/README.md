@@ -1,7 +1,7 @@
 # EV Charging Behavior Prediction Project
 
 **Status:** 🟢 Active Development  
-**Phase:** Classical ML Complete | Neural Networks In Progress  
+**Phase:** Classical ML Complete | Regularization Ready for Execution  
 **Last Updated:** December 10, 2025
 
 ---
@@ -28,35 +28,42 @@ ev_project/
 ├── README.md                          # This file
 ├── 1_Data_analysis.md                 # Initial EDA findings
 ├── 2_Data_cleanup.md                  # Data cleaning documentation
-├── 3_Modeling_Results.md              # Model performance summary
+├── 3_Modeling_Results.md              # Baseline model results
+├── 4_Regularization_Results.md        # 🆕 Regularization techniques & results
 ├── EV_Charging_Data_Analysis.ipynb    # Exploratory analysis notebook
 ├── EV_Data_Cleaning_and_Preparation.ipynb  # Data preprocessing
-├── EV_Modeling.ipynb                  # 🎯 Main modeling notebook
+├── EV_Modeling.ipynb                  # Baseline modeling (RF, XGB, NN)
+├── EV_Modeling_Regularized.ipynb      # 🎯 Regularized NN models (Lecture 4)
 ├── data/
 │   └── ev_sessions_clean.csv          # Cleaned dataset (6,880 sessions)
 └── fig/
     ├── energy_consumption_graph.png
     ├── charging_duration_graph.png
-    └── modeling/                       # Model evaluation plots
-        ├── metrics.csv
-        ├── monthwise_energy_metrics.csv
-        ├── monthwise_duration_metrics.csv
-        ├── *_pred_vs_actual.png        # Prediction scatter plots
-        └── *_residuals.png              # Residual distributions
+    ├── modeling/                       # Baseline model plots
+    │   ├── metrics.csv
+    │   ├── monthwise_*_metrics.csv
+    │   ├── *_pred_vs_actual.png
+    │   └── *_residuals.png
+    └── modeling_regularized/           # 🆕 Regularization results
+        ├── regularized_metrics.csv
+        ├── all_models_comparison.csv
+        ├── *_training_history.png
+        ├── *_predictions_comparison.png
+        └── *_residuals_comparison.png
 ```
 
 ---
 
 ## 🎯 Current Status & Results
 
-### ✅ Phase 1: Classical ML (Complete)
+### ✅ Phase 1: Classical ML + Baseline NN (Complete)
 
 **Models Implemented:**
 
 - Ridge Regression (baseline)
 - Random Forest Regressor
 - XGBoost Regressor
-- Keras Neural Network (MLP)
+- Keras Neural Network (MLP - no regularization)
 
 **Best Performance (Test Set):**
 
@@ -168,9 +175,7 @@ ev_project/
 
 **Expected Outcome:** Reduce overfitting, improve generalization, achieve R² > 0.65 for duration
 
----
-
-#### 2. Enhance Feature Engineering
+#### 3. Enhance Feature Engineering
 
 **Goal:** Capture behavioral patterns and temporal context
 
@@ -198,7 +203,7 @@ ev_project/
 
 ### 🔮 Medium-Term Goals (Week 3-4)
 
-#### 3. Incorporate External Data
+#### 4. Incorporate External Data
 
 **Available Datasets:**
 
@@ -221,9 +226,7 @@ ev_project/
 
 **Expected Outcome:** Improve seasonal robustness, capture weather/activity effects
 
----
-
-#### 4. Advanced Neural Network Architectures
+#### 5. Advanced Neural Network Architectures
 
 **Goal:** Apply course material on RNNs/LSTMs for sequence modeling
 
@@ -257,7 +260,7 @@ ev_project/
 
 ### 🎓 Long-Term Vision (Future Iterations)
 
-#### 5. Model Optimization & Production
+#### 6. Model Optimization & Production
 
 - [ ] **Hyperparameter Tuning**
 
@@ -276,7 +279,7 @@ ev_project/
   - Inference pipeline design
   - Real-time prediction API
 
-#### 6. Advanced Techniques
+#### 7. Advanced Techniques
 
 - [ ] **Ensemble Methods**
 
@@ -442,9 +445,11 @@ Train models, evaluate performance, generate visualizations.
 
 ### 4. Review Results
 
-- Read `3_Modeling_Results.md` for summary
-- Check `fig/modeling/metrics.csv` for numeric results
-- View plots in `fig/modeling/` for visual analysis
+### 5. Review Results
+
+- **Baseline:** Read `3_Modeling_Results.md` and check `fig/modeling/`
+- **Regularized:** Read `4_Regularization_Results.md` and check `fig/modeling_regularized/`
+- Compare baseline vs regularized performance
 
 ---
 
