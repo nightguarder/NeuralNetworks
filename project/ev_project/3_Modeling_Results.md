@@ -64,22 +64,26 @@ Check February specifically for stability; no rebalancing was applied during cle
 ## Next Steps
 
 ### Immediate (Following Lecture 4: Regularization)
+
 - **Apply dropout layers** (0.2-0.5) to Neural Network to reduce overfitting.
 - **Implement early stopping** callback to prevent overtraining.
 - **Add L1/L2 regularization** to dense layers.
 - **Test batch normalization** for training stability.
 
 ### Feature Engineering
+
 - Add user/garage aggregation features (rolling means, counts) to capture behavioral histories.
 - Add weather features (temp, precip, solar, wind) to improve performance and seasonal robustness.
 - Create lag features (previous session energy/duration).
 
 ### Advanced Models
+
 - Implement LSTM/RNN for sequence-based prediction (following course syllabus).
 - Try LightGBM and perform hyperparameter tuning with time-series CV.
 - Add SHAP/Permutation importance for interpretability.
 
 ### Validation
+
 - Extend month-wise validation to all 13 months.
 - Implement 5-fold time-series cross-validation.
 - Test model robustness on February data specifically.
