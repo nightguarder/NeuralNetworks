@@ -1,80 +1,186 @@
-# NN - Neural Networks (Course scaffold)
+# Neural Networks: Theory and Applications
 
-Neural Networks: Theory and Applications (Prof. Dr. Stefanie Vogl)
+**Course:** Neural Networks (Prof. Dr. Stefanie Vogl)  
+**Institution:** OTH Regensburg  
+**Last Updated:** December 10, 2025
 
-This repository contains course materials for the "Neural Networks: Theory and Applications" from OTH Regensburg.
+This repository contains lecture materials, practical exercises, notebooks, and a comprehensive course project for an introductory neural networks course.
 
-## Structure
+---
 
-- `lectures/` — lecture slides and notes
-- `exercises/` — practical exercises and assignments
-- `projects/` — student projects and reports
-- `notebooks/` — Jupyter notebooks and guided tutorials
-- `code/` — runnable example scripts (Keras / TensorFlow / PyTorch)
-- `data/` — datasets used in exercises (gitignored by default)
-- `references/` — papers and reading list
-- `docs/` — additional documentation
+## 📁 Repository Structure
 
-## NN - Neural Networks (Course scaffold)
+```
+├── lectures/           # Jupyter notebooks covering course topics
+├── notebooks/          # Practice notebooks and tutorials
+├── code/              # Runnable example scripts (Keras/TensorFlow/PyTorch)
+├── data/              # Course datasets and examples
+├── project/           # Main course project
+│   └── ev_project/    # ✨ EV Charging Behavior Prediction (Active)
+├── requirements-macos.txt
+└── SYLLABUS.md        # Detailed course syllabus
+```
 
-Neural Networks: Theory and Applications (Prof. Dr. Stefanie Vogl)
+---
 
-This repository contains lecture material, exercises, notebooks and example code for an introductory neural networks course.
+## 🚀 Quick Start
 
-### Quick start (minimal)
+### 1. Environment Setup
 
-1. Create and activate a virtual environment (from repository root):
+Create and activate a virtual environment:
 
 ```bash
-# from repository root (macOS / zsh)
+# macOS / zsh
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-1. Install dependencies (inside the virtual environment):
+### 2. Install Dependencies
 
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements-macos.txt
 ```
 
-3. Install PyTorch with Metal (if on Apple Silicon):
+### 3. Install PyTorch (Apple Silicon)
 
 ```bash
 pip3 install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
 ```
 
-4. Verify PyTorch + TensorFlow (Metal) availability:
+### 4. Verify Installation
 
-Run the provided test script for PyTorch:
-
+Test PyTorch:
 ```bash
 python code/test_pytorch.py
 ```
 
-And for TensorFlow:
-
+Test TensorFlow:
 ```bash
 python code/test_tensorflow.py
 ```
 
-1. Open the notebook server and run the example:
+### 5. Launch Jupyter
 
 ```bash
 jupyter lab
 ```
 
-Open `notebooks/simple_mlp.ipynb` and run the cells.
+Start with `notebooks/simple_mlp.ipynb` or explore the lectures.
 
-TensorFlow (optional)
+---
 
-If you want TensorFlow on macOS, follow the official guide:
-https://www.tensorflow.org/install/pip#macos
+## 📚 Course Topics
 
-Files in this repo
+Based on the [SYLLABUS.md](SYLLABUS.md), the course covers:
 
-- `notebooks/` — Jupyter notebooks (start with `simple_mlp.ipynb`).
-- `code/` — runnable examples (currently `code/test_pytorch.py`).
-- `data/` — example datasets (CSV files).
-- `requirements-macos.txt` — pip-style list for macOS (mentions PyTorch entries).
-- `requirements-pytorch.txt` — minimal PyTorch package list.
+1. **Neural Network Fundamentals**
+   - Architecture, activation functions, layer types
+   - Forward/backward propagation
+
+2. **Training & Optimization**
+   - Loss functions, gradient descent variants (SGD, Adam)
+   - Learning rate scheduling
+
+3. **Regularization Techniques** (Lecture 4)
+   - L1/L2 regularization, dropout
+   - Early stopping, batch normalization
+   - Preventing overfitting
+
+4. **Advanced Architectures**
+   - Convolutional Neural Networks (CNNs)
+   - Recurrent Neural Networks (RNNs)
+   - Long Short-Term Memory (LSTMs)
+
+5. **Practical Applications**
+   - Image recognition
+   - Time series forecasting
+   - Real-world case studies
+
+---
+
+## 🎯 Course Project: EV Charging Prediction
+
+**Location:** [`project/ev_project/`](project/ev_project/)
+
+### Project Goal
+Predict Electric Vehicle (EV) charging behavior to optimize charging infrastructure and energy management.
+
+### Current Status
+✅ **Phase 1: Classical ML Models (Complete)**
+- Implemented and evaluated Ridge, Random Forest, XGBoost, and Keras NN
+- Best performance: **Random Forest** with R² = 0.61 (Duration), R² = 0.24 (Energy)
+- See [`project/ev_project/README.md`](project/ev_project/README.md) for details
+
+### Key Achievements
+- Comprehensive data analysis (6,880 charging sessions)
+- Feature engineering (temporal encodings, categorical features)
+- Model comparison with month-wise validation
+- Visualization suite for prediction analysis
+
+### Next Steps
+- Implement regularization techniques from Lecture 4
+- Add LSTM/RNN models following course material
+- Incorporate weather and traffic data
+- Hyperparameter tuning with early stopping
+
+---
+
+## 📖 Lectures
+
+| Notebook | Topic | Key Concepts |
+|----------|-------|--------------|
+| `NN_Lecture1_Basics.ipynb` | Introduction | Perceptron, activation functions |
+| `NN_Lecture2_Graphics_and_Data.ipynb` | Data handling | Visualization, preprocessing |
+| `NN_Lecture3_Neuro_get_started.ipynb` | Getting started | Keras basics, model building |
+| `NN_Lecture3_Part2_Metaparameters.ipynb` | Hyperparameters | Learning rate, early stopping |
+| `NN_Lecture4_Regularisation.ipynb` | **Regularization** | L1/L2, dropout, overfitting |
+
+---
+
+## 🛠️ Technologies Used
+
+- **Python 3.x**
+- **Deep Learning:** TensorFlow/Keras, PyTorch
+- **ML Libraries:** scikit-learn, XGBoost
+- **Data Science:** pandas, numpy, matplotlib, seaborn
+- **Notebooks:** Jupyter Lab
+
+---
+
+## 📊 Project Results Snapshot
+
+**Current Best Models (Test Set):**
+
+| Target | Model | RMSE | MAE | R² |
+|--------|-------|------|-----|-----|
+| Duration | Random Forest | 11.38 | 3.45 | 0.60 |
+| Duration | Keras NN | 8.38 | 3.25 | 0.61 |
+| Energy | Random Forest | 10.41 | 6.59 | 0.24 |
+| Energy | XGBoost | 10.96 | 7.01 | 0.15 |
+
+*Full results and analysis in `project/ev_project/3_Modeling_Results.md`*
+
+---
+
+## 📝 Additional Resources
+
+- **TensorFlow on macOS:** https://www.tensorflow.org/install/pip#macos
+- **Course Syllabus:** [SYLLABUS.md](SYLLABUS.md)
+- **Project Documentation:** [project/ev_project/](project/ev_project/)
+
+---
+
+## 🎓 Learning Outcomes
+
+By completing this course and project, students will:
+- ✅ Understand neural network architectures and training
+- ✅ Implement models using Keras and PyTorch
+- ✅ Apply regularization techniques to prevent overfitting
+- ✅ Evaluate and optimize model performance
+- ✅ Work with real-world datasets and time series
+- ✅ Compare classical ML vs. deep learning approaches
+
+---
+
+**Note:** The `ev_charging_project/` folder has been archived as the LSTM/GRU approach did not perform well. The active project now focuses on classical ML models with plans to incorporate neural network techniques from the lectures.
