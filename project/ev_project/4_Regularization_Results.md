@@ -417,23 +417,23 @@ After multiple iterations of model improvement, we discovered a **fundamental da
 
 ```
 ⚠️  CRITICAL DISCOVERY:
-  
+
   Duration Distribution in Training Data:
   - Mean: 11.22 hours
   - Median: 9.99 hours
   - Standard Deviation: 12.49 hours
   - Maximum: 187.06 hours
-  
+
   Distribution Breakdown:
   - 89.4% of sessions < 20 hours
   - 6.7% of sessions between 20-40 hours
   - Only 3.9% of sessions > 40 hours
-  
+
   ⚠️  THE ISSUE:
   Models trained on this heavily skewed data learn to predict the MEAN (~11 hours)
   for rare high values. High values (40+ hours) are RARE in training data, so models
   predict conservatively around 30-35 hours regardless of actual value.
-  
+
   This is NOT overfitting - it's UNDERFITTING on the tail distribution!
   The models are behaving RATIONALLY given the data scarcity.
 ```
@@ -563,7 +563,7 @@ def build_classifier(input_dim):
         Dropout(0.2),
         Dense(1, activation='sigmoid')  # Binary classification output
     ])
-    
+
     model.compile(
         optimizer='adam',
         loss='binary_crossentropy',  # Changed from 'mse'
@@ -626,36 +626,39 @@ calibrated_proba = calibrated_clf.predict_proba(X_test)[:, 1]
 
 ### Comparison with Regression Approach
 
-| Aspect                   | Regression (Current)                    | Classification (Proposed)                   |
-| ------------------------ | --------------------------------------- | ------------------------------------------- |
-| **Problem**              | Predict exact duration (hours)          | Predict will unplug < 24h (probability)     |
-| **Target**               | Continuous (0-187 hours)                | Binary (0 or 1)                             |
-| **Data Balance**         | 89.4% < 20h, 3.9% > 40h                 | ~73% < 24h, ~27% ≥ 24h                      |
-| **Best R²**              | 0.59 (duration)                         | N/A (use AUC instead)                       |
-| **Tail Performance**     | Poor (R² = -1.8 for > 40h)              | Better (sufficient examples for ≥ 24h)      |
-| **Interpretability**     | "Predicted: 45.3 hours"                 | "85% chance unplug within 24h"              |
-| **Actionability**        | Uncertain for planning                  | Clear binary decision for operations        |
-| **Regularization Issue** | High variance in tail, underfits        | More balanced, learns both classes          |
-| **Use Case**             | "When will they unplug?" (hard)         | "Will they unplug soon?" (easier)           |
-| **Model Confidence**     | Low for high values                     | Calibrated probabilities with uncertainty   |
-| **Expected Performance** | R² = 0.59, RMSE = 8.7h                  | Accuracy > 80%, AUC > 0.85                  |
-| **Professor Feedback**   | "Why is tail performance poor?"         | "Smart reframing of an ill-posed problem"   |
+| Aspect                   | Regression (Current)             | Classification (Proposed)                 |
+| ------------------------ | -------------------------------- | ----------------------------------------- |
+| **Problem**              | Predict exact duration (hours)   | Predict will unplug < 24h (probability)   |
+| **Target**               | Continuous (0-187 hours)         | Binary (0 or 1)                           |
+| **Data Balance**         | 89.4% < 20h, 3.9% > 40h          | ~73% < 24h, ~27% ≥ 24h                    |
+| **Best R²**              | 0.59 (duration)                  | N/A (use AUC instead)                     |
+| **Tail Performance**     | Poor (R² = -1.8 for > 40h)       | Better (sufficient examples for ≥ 24h)    |
+| **Interpretability**     | "Predicted: 45.3 hours"          | "85% chance unplug within 24h"            |
+| **Actionability**        | Uncertain for planning           | Clear binary decision for operations      |
+| **Regularization Issue** | High variance in tail, underfits | More balanced, learns both classes        |
+| **Use Case**             | "When will they unplug?" (hard)  | "Will they unplug soon?" (easier)         |
+| **Model Confidence**     | Low for high values              | Calibrated probabilities with uncertainty |
+| **Expected Performance** | R² = 0.59, RMSE = 8.7h           | Accuracy > 80%, AUC > 0.85                |
+| **Professor Feedback**   | "Why is tail performance poor?"  | "Smart reframing of an ill-posed problem" |
 
 ### Academic Justification
 
 **Why This is a Valid Approach (Not Avoiding the Problem):**
 
 1. **Problem Reframing is Good Science:**
+
    - We attempted regression thoroughly (3 iterations, multiple architectures)
    - Identified fundamental data limitation through systematic analysis
    - Proposed alternative that better matches data distribution and use case
 
 2. **Real-World Relevance:**
+
    - Charging station operators care more about "availability" than "exact duration"
    - Binary classification provides actionable insights with confidence levels
    - Aligns with how the problem would be framed in industry
 
 3. **Demonstrates Deep Understanding:**
+
    - We didn't just accept poor performance
    - Diagnosed root cause (data skewness, not model configuration)
    - Proposed solution that addresses the root cause
@@ -711,26 +714,31 @@ Section: Lessons Learned - When Regression Fails
 **Structure:**
 
 1. **Data Preparation**
+
    - Create binary target variable
    - Analyze class distribution
    - Check for imbalance (class weights if needed)
 
 2. **Model Development**
+
    - Build 5 classifier variants (same as regression)
    - Use sigmoid activation + binary crossentropy
    - Apply dropout, L2, batch normalization
 
 3. **Training & Evaluation**
+
    - Train with class weights if imbalanced
    - Monitor accuracy, precision, recall, AUC
    - Compare learning curves
 
 4. **Probability Calibration**
+
    - Calibrate predictions for reliable probabilities
    - Plot calibration curves
    - Provide confidence intervals
 
 5. **Business Interpretation**
+
    - Confusion matrix analysis
    - Cost-benefit analysis of false positives vs false negatives
    - Threshold tuning for operational needs
