@@ -1,8 +1,8 @@
 # EV Charging Behavior Prediction Project
 
 **Status:** 🟢 Active Development  
-**Phase:** Classical ML Complete | Regularization Ready for Execution  
-**Last Updated:** December 10, 2025
+**Phase:** Two-Stage Pipeline (Stage 2 v2 complete)  
+**Last Updated:** January 9, 2026
 
 ---
 
@@ -54,41 +54,6 @@ ev_project/
 
 ---
 
-## 🎯 Current Status & Results
-
-### ✅ Phase 1: Classical ML + Baseline NN (Complete)
-
-**Models Implemented:**
-
-- Ridge Regression (baseline)
-- Random Forest Regressor
-- XGBoost Regressor
-- Keras Neural Network (MLP - no regularization)
-
-**Best Performance (Test Set):**
-
-| Target       | Best Model    | RMSE        | MAE        | R²       | Status      |
-| ------------ | ------------- | ----------- | ---------- | -------- | ----------- |
-| **Duration** | Keras NN      | 8.38 hours  | 3.25 hours | **0.61** | ✅ Good     |
-| **Duration** | Random Forest | 11.38 hours | 3.45 hours | 0.60     | ✅ Good     |
-| **Energy**   | Random Forest | 10.41 kWh   | 6.59 kWh   | **0.24** | ⚠️ Moderate |
-| **Energy**   | XGBoost       | 10.96 kWh   | 7.01 kWh   | 0.15     | ⚠️ Moderate |
-
-**Key Findings:**
-
-- ✅ Tree-based models outperform linear baselines
-- ✅ Duration prediction is more accurate than energy (R² = 0.60 vs 0.24)
-- ✅ Month-wise validation shows stable performance (Dec-Jan)
-- ⚠️ Energy prediction needs improvement (consider adding duration as feature)
-
-**Generated Artifacts:**
-
-- 12 visualization plots (pred vs actual, residuals for RF/XGB/NN)
-- CSV metrics for overall and month-wise performance
-- Complete model comparison table
-
----
-
 ## 🔬 Data Summary
 
 ### Dataset Characteristics
@@ -103,7 +68,7 @@ ev_project/
 
 **Energy Consumption (El_kWh):**
 
-- Mean: 14.23 kWh | Median: 11.85 kWh | Std: 10.47 kWh
+- Mean: 14.23 kWh | Median: **11.85 kWh** | Std: 10.47 kWh
 - Range: 0.01 - 77.88 kWh
 - Distribution: Right-skewed (mean > median)
 
@@ -150,7 +115,7 @@ ev_project/
 
 **Actions:**
 
-- [ ] **Dropout Layers**
+- [x] **Dropout Layers**
 
   - Add dropout (0.2-0.5) between dense layers
   - Test different dropout rates
@@ -162,18 +127,46 @@ ev_project/
   - Test L2 (ridge) regularization
   - Monitor weight distributions
 
-- [ ] **Early Stopping**
+- [x] **Early Stopping**
 
   - Implement `EarlyStopping` callback
   - Monitor validation loss with patience=10
   - Restore best weights automatically
 
-- [ ] **Batch Normalization**
+- [x] **Batch Normalization**
   - Add BatchNormalization layers
   - Test placement (before/after activation)
   - Measure impact on training stability
 
-**Expected Outcome:** Reduce overfitting, improve generalization, achieve R² > 0.65 for duration
+## **Expected Outcome:** Reduce overfitting, improve generalization, achieve R² > 0.65 for duration
+
+##### Results Lecture 4 Techniques
+
+We moved from a baseline Multi-Layer Perceptron (MLP) to a regularized architecture implementing the following:
+
+**Dropout (0.3):** Applied after hidden layers to prevent neuron co-adaptation.
+**L2 Regularization (λ=0.001):** Added to dense layers to penalize large weights.
+**Batch Normalization:** Applied before activation functions to stabilize learning rates.
+**Early Stopping:** Monitor val_loss with patience=10.
+
+| Metric               | Baseline Model (No Reg) | Regularized Model (Lecture 4) | Observation                                       |
+| -------------------- | ----------------------: | ----------------------------: | ------------------------------------------------- |
+| Training R²          |                    0.78 |                          0.61 | Gap narrowed (Overfitting reduced)                |
+| Validation R²        |                    0.48 |                          0.59 | Generalization improved                           |
+| Training MAE         |               2.9 hours |                     3.9 hours | Error increased slightly (Bias–variance tradeoff) |
+| Validation MAE       |               5.2 hours |                     4.1 hours | Validation error decreased                        |
+| Convergence (epochs) |                     100 |                            42 | Early stopping triggered efficiently              |
+
+**Key Findings**
+The application of Dropout and L2 Regularization successfully closed the generalization gap. The Baseline model was overfitting (high training score, low validation score), whereas the Regularized model showed consistent performance across both sets.
+The "Glass Ceiling": Despite rigorous regularization, the Validation R² plateaued at ~0.59, falling short of the >0.65 target.
+plateaued at ~0.59, falling short of the >0.65 target.
+
+For sessions > 20 hours:
+R² < 0.50
+(Model fails completely).
+
+-
 
 #### 3. Enhance Feature Engineering
 
@@ -450,6 +443,24 @@ Train models, evaluate performance, generate visualizations.
 - **Baseline:** Read `3_Modeling_Results.md` and check `fig/modeling/`
 - **Regularized:** Read `4_Regularization_Results.md` and check `fig/modeling_regularized/`
 - Compare baseline vs regularized performance
+
+---
+
+## 🆕 Latest Updates (Jan 2026)
+
+### Short-Session Regression v2 (Aggregates + log1p)
+- Scope: Train regressors on `<24h` subset to avoid tail-induced bias.
+- Enhancements: Added user/garage aggregates and `log1p(Duration_hours)` target transform.
+- Results (Test Set):
+  - MLP v2: RMSE 5.962, MAE 4.382, R² 0.156
+  - RF  v2: RMSE 5.798, MAE 4.113, R² 0.202 (current best)
+- Artifacts:
+  - Metrics: [project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv)
+  - Plot: [project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png](project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png)
+
+### Next
+- Integrate Two-Stage routing with tuned Stage 1 threshold and evaluate pipeline-level metrics.
+- Hyperparameter tuning for RF; benchmark `HistGradientBoostingRegressor`.
 
 ---
 
