@@ -1,0 +1,2 @@
+auc_long,best_threshold,precision_long,recall_long,f1_long,coverage_predicted_short,rmse_predicted_short,mae_predicted_short,r2_predicted_short,rmse_actual_short,mae_actual_short,r2_actual_short
+0.6752373296585515,0.325,0.5,0.01904761904761905,0.03669724770642202,0.9970348406226834,14.708837781699737,6.9012211631094935,0.008668307032795641,5.9537944391494975,4.185675679010142,0.16124261457304523

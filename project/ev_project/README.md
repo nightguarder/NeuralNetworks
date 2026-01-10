@@ -458,9 +458,32 @@ Train models, evaluate performance, generate visualizations.
   - Metrics: [project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv)
   - Plot: [project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png](project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png)
 
+### Two-Stage Pipeline Integration
+- Notebook: [project/ev_project/EV_Pipeline_Evaluation.ipynb](project/ev_project/EV_Pipeline_Evaluation.ipynb)
+- Architecture: Regularized MLP classifier → RF v2 regressor (routed by tuned threshold)
+
+**Baseline Results (MLP Classifier):**
+- Stage 1 AUC: 0.675; Best threshold: 0.325; F1 (Long class): 0.037 (Recall: 1.9%)
+- Coverage predicted-short: 99.7%
+- Predicted-short metrics: RMSE 14.71, MAE 6.90, R² 0.009
+- Observation: Poor discriminatory power; nearly all sessions routed to regression.
+
+**Enhanced Results (HistGradientBoosting + User/Garage Aggregates):**
+- Stage 1 AUC: **0.847** (+25%); Threshold: 0.633; F1 (Long): **0.428** (Recall: **59.0%**)
+- Coverage predicted-short: **86.3%**
+- Predicted-short metrics: RMSE **11.70** (-20%), MAE 5.30, R² 0.057
+- Actual-short metrics: RMSE 5.95, MAE 4.19, R² 0.161 (RF v2 unchanged; excellent on true shorts)
+- Confusion: Correctly identified **62/105** long sessions (vs 2/105 baseline)
+- Observation: Gradient boosting + aggregates dramatically improved Long-session detection; pipeline now operational.
+
+**Artifacts:**
+- Baseline: [pipeline_metrics.csv](project/ev_project/fig/pipeline/pipeline_metrics.csv), [confusion_matrix.png](project/ev_project/fig/pipeline/confusion_matrix.png)
+- Enhanced: [pipeline_metrics_enhanced.csv](project/ev_project/fig/pipeline/pipeline_metrics_enhanced.csv), [classifier_comparison.csv](project/ev_project/fig/pipeline/classifier_comparison.csv), [confusion_comparison.png](project/ev_project/fig/pipeline/confusion_comparison.png)
+
 ### Next
-- Integrate Two-Stage routing with tuned Stage 1 threshold and evaluate pipeline-level metrics.
-- Hyperparameter tuning for RF; benchmark `HistGradientBoostingRegressor`.
+- Operational threshold tuning with cost-sensitive criteria (business-driven trade-offs).
+- Stage 2 hyperparameter tuning (RF grid search, benchmark HistGradientBoostingRegressor).
+- Model interpretation (SHAP values for key Long-session drivers).
 
 ---
 

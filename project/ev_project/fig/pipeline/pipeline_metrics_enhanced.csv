@@ -1,0 +1,2 @@
+model,auc_long,best_threshold,precision_long,recall_long,f1_long,coverage_predicted_short,rmse_predicted_short,mae_predicted_short,r2_predicted_short,rmse_actual_short,mae_actual_short,r2_actual_short
+HistGradientBoosting,0.8465013014852244,0.6333333333333333,0.33513513513513515,0.5904761904761905,0.42758620689655175,0.8628613787991104,11.700566415030789,5.300920736688663,0.056791466746134,5.9537944391494975,4.185675679010142,0.16124261457304523

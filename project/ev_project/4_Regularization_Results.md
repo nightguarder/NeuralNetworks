@@ -186,6 +186,70 @@ Callbacks: Early Stopping, ReduceLROnPlateau
 
 ---
 
+## Short-Session Regression (Stage 2)
+
+**Notebook:** [project/ev_project/EV_Short_Session_Regression.ipynb](project/ev_project/EV_Short_Session_Regression.ipynb)
+
+**Scope:** Train regressors on short sessions only (`Duration_hours < 24`) to avoid heavy-tail effects.
+
+**Data:** 6,289 short sessions from [data/ev_sessions_clean.csv](project/ev_project/data/ev_sessions_clean.csv)
+
+**Features:**
+- Numerical: `hour_sin`, `hour_cos`, `temp`, `precip`, `wind_spd`, `clouds`, `solar_rad`
+- Categorical: `weekday`, `Garage_ID`, `month_plugin`
+
+**Models & Results (Test Set):**
+- Regularized MLP (Dropout, BatchNorm, EarlyStopping): RMSE = 6.035, MAE = 4.831, R² = 0.135
+- Random Forest (with preprocessing pipeline): RMSE = 6.311, MAE = 4.917, R² = 0.055
+
+**Outputs:**
+- Metrics CSV: [fig/modeling_regularized/short_regression_metrics.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics.csv)
+- Predictions vs Actuals: [fig/modeling_regularized/short_regression_pred_vs_actual.png](project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual.png)
+
+**Findings:**
+- Focusing on short sessions reduces tail-induced bias and stabilizes training.
+- Regularized MLP outperforms Random Forest modestly but R² remains limited, suggesting feature insufficiency rather than pure overfitting.
+
+**Next Improvements:**
+- Add user-level aggregates (e.g., per-user average duration/frequency), and garage-level context.
+- Try target transforms (log1p) and robust losses (Huber/Quantile) for skew mitigation.
+- Tune network capacity and regularization rates; consider time-aware validation (month-wise splits).
+
+---
+
+## Short-Session Regression v2 (Aggregates + log1p)
+
+**Date:** January 9, 2026  
+**Notebook:** [project/ev_project/EV_Short_Session_Regression.ipynb](project/ev_project/EV_Short_Session_Regression.ipynb)
+
+**Enhancements:**
+- Added user-level aggregates: session count, average duration, average energy
+- Added garage-level aggregates: session count, average duration, average energy
+- Applied `log1p(Duration_hours)` target transform; inverse with `expm1` at inference
+
+**Results (Test Set):**
+- MLP v2 (agg + log1p): RMSE 5.962, MAE 4.382, R² 0.156
+- RF  v2 (agg + log1p): RMSE 5.798, MAE 4.113, R² 0.202
+
+**Files:**
+- Metrics CSV: [project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv)
+- Predictions vs Actuals: [project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png](project/ev_project/fig/modeling_regularized/short_regression_pred_vs_actual_v2.png)
+
+**Comparison vs Baseline:**
+- MLP: R² +0.021, RMSE −0.073, MAE −0.449
+- RF:  R² +0.147, RMSE −0.513, MAE −0.804
+
+**Observations:**
+- Aggregates and log1p improve stability and reduce error; RF currently leads.
+- Very short durations still show mild overprediction; additional recent-history features may help.
+
+**Next Steps:**
+- Tune RF hyperparameters (`n_estimators`, `max_depth`, `min_samples_leaf`) and evaluate `HistGradientBoostingRegressor`.
+- Add recency features (last 7/30 days counts), time-since-last-plug, per-user/garage variance.
+- Integrate Two-Stage routing: use tuned Stage 1 threshold, evaluate pipeline-level metrics across all sessions.
+
+---
+
 ## Interpretation Guidelines
 
 ### What to Look For

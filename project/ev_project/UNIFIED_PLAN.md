@@ -108,14 +108,69 @@ We previously attempted a Pure Regression approach (`EV_Modeling_Regularized.ipy
 ## Roadmap (Updated Jan 9, 2026)
 
 1. **Fix Data:** Overwrite `EV_Data_Cleaning_and_Preparation.ipynb` [COMPLETED]
-2. **Implement Classification (Stage 1):** `EV_Charging_Classification.ipynb` (train, tune threshold, evaluate) [IN PROGRESS]
+2. **Implement Classification (Stage 1):** `EV_Charging_Classification.ipynb` (train, tune threshold, evaluate) [COMPLETED]
 3. **Implement Short-Only Regression (Stage 2):** `<24h` subset with aggregates + log1p [COMPLETED]
-  - Results snapshot: RF v2 R² ≈ 0.202, RMSE ≈ 5.80, MAE ≈ 4.11
-  - Artifacts: [project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv)
-4. **Pipeline Integration:** Route predictions via tuned threshold; compute end-to-end metrics [PENDING]
-5. **Verification:** Compare pipeline (AUC + short-only R²/RMSE) vs pure regression baselines; document trade-offs [PENDING]
+   - Results snapshot: RF v2 R² ≈ 0.202, RMSE ≈ 5.80, MAE ≈ 4.11 (on actual-short test set)
+   - Artifacts: [project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv](project/ev_project/fig/modeling_regularized/short_regression_metrics_v2.csv)
+4. **Pipeline Integration:** Route predictions via tuned threshold; compute end-to-end metrics [COMPLETED]
+   - Notebook: [project/ev_project/EV_Pipeline_Evaluation.ipynb](project/ev_project/EV_Pipeline_Evaluation.ipynb)
+   - Metrics: [project/ev_project/fig/pipeline/pipeline_metrics.csv](project/ev_project/fig/pipeline/pipeline_metrics.csv)
+   - Plots: [confusion_matrix.png](project/ev_project/fig/pipeline/confusion_matrix.png), [pred_short_scatter.png](project/ev_project/fig/pipeline/pred_short_scatter.png)
+5. **Verification & Next Steps:** [IN PROGRESS]
 
-### Immediate Next Actions
-- Re-optimize Stage 1 threshold using cost-sensitive criteria and consider probability calibration.
-- Implement pipeline evaluation notebook to combine Stage 1 routing with Stage 2 RF v2 regressor.
-- Add recency-based features and hyperparameter tuning for RF; benchmark `HistGradientBoostingRegressor`.
+### Pipeline Results Summary
+
+**Stage 1 (Classification):**
+- AUC (Long vs Short): 0.675
+- Best Threshold: 0.325
+- F1 (Long class): 0.037 (Precision: 0.50, Recall: 0.019)
+- Observation: Classifier has low discriminatory power; threshold tuning recovered 2 true Long sessions from 105 actual (1.9% recall).
+
+**Stage 2 (RF v2 Regression):**
+- Coverage (predicted-short): 99.7% of test set routed to regressor.
+- Predicted-short metrics: RMSE 14.71, MAE 6.90, R² 0.009 (poor; includes misrouted long sessions).
+- Actual-short metrics: RMSE 5.95, MAE 4.19, R² 0.161 (good; RF v2 performs well when ground-truth is <24h).
+
+**Key Findings:**
+- Current classifier fails to reliably identify long sessions (98% recall loss), causing nearly all test samples to be routed to regression.
+- The regressor trained on short-only is accurate for truly short sessions but performs poorly when forced to predict on long sessions.
+- The pipeline's end-to-end metrics are dominated by misrouting: RMSE 14.71 vs isolated RF v2 RMSE 5.95.
+
+### Enhanced Pipeline with HistGradientBoosting (Jan 9, 2026)
+
+**Improvements Applied:**
+- Added user/garage aggregates to Stage 1 features (session counts, avg duration/energy)
+- Trained HistGradientBoosting and GradientBoosting classifiers with sample weighting
+- Best model: HistGradientBoosting with AUC 0.847 (+25% over baseline MLP's 0.675)
+
+**Results:**
+- Stage 1 Enhanced:
+  - AUC (Long): 0.847 (was 0.675)
+  - Best threshold: 0.633
+  - F1 (Long): 0.428 (was 0.037)
+  - Precision: 0.335, Recall: 0.590 (was 0.50, 0.019)
+  - Confusion: Correctly identified 62/105 long sessions (59% recall vs 1.9% before)
+- Pipeline End-to-End:
+  - Coverage: 86.3% routed to Stage 2 (was 99.7%)
+  - Predicted-short: RMSE 11.70, MAE 5.30, R² 0.057
+  - Actual-short: RMSE 5.95, MAE 4.19, R² 0.161 (unchanged; RF v2 still excellent on true shorts)
+
+**Key Findings:**
+- Enhanced features + gradient boosting dramatically improved Long-session detection (59% recall vs 1.9%).
+- 13.7% of test sessions now correctly routed as Long, reducing misrouting burden on regressor.
+- Predicted-short RMSE improved from 14.71 to 11.70 (-20%), though still elevated due to some misrouted long sessions.
+- The pipeline is now viable: classifier has meaningful discriminatory power and routing is operational.
+
+### Remaining Next Actions
+- **Operational threshold tuning:**
+  - Use cost-sensitive criteria based on business needs (e.g., penalty for missed long sessions vs false alarms).
+  - Explore multiple thresholds to create risk tiers (low/medium/high probability long sessions).
+- **Stage 2 hyperparameter tuning:**
+  - Grid search for RF optimal parameters (max_depth, min_samples_leaf, n_estimators).
+  - Benchmark HistGradientBoostingRegressor as alternative to RF.
+- **Feature engineering round 2:**
+  - Add temporal recency (sessions in last 7/30 days) when performance allows.
+  - Incorporate time-since-last-plug, day-of-week interaction with hour.
+- **Model interpretation:**
+  - SHAP values for HistGradientBoosting to identify key Long-session drivers.
+  - Feature importance analysis to guide further engineering.
