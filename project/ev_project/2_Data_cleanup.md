@@ -37,6 +37,11 @@ This document captures the agreed data-cleaning decisions for the Trondheim EV c
 4. Feature consistency
 
 - Keep and refresh convenience columns: `Start_plugin_hour`, `End_plugout_hour`, `weekdays_plugin`, `month_plugin` from timestamps to avoid drift.
+- Derive weather flags from merged weather data (after filling medians to avoid drops):
+  - `is_rainy` = precip ≥ 1.0
+  - `is_overcast` = clouds ≥ 80
+  - `is_sunny` = clouds ≤ 20 AND precip < 0.2 AND solar_rad ≥ median(solar_rad)
+  - Original continuous weather columns remain for modeling.
 
 5. Handle missing account ownership
 
