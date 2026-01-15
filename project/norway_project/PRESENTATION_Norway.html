@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Norway EV Charging Neural Networks - 12 Locations</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #1a1a1a;
+                color: #333;
+            }
+
+            .slide-container {
+                width: 100%;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .slide {
+                background: white;
+                border-radius: 10px;
+                padding: 60px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                min-height: 600px;
+                page-break-after: always;
+            }
+
+            .slide h1 {
+                color: #2c3e50;
+                font-size: 2.8em;
+                margin-bottom: 30px;
+                border-bottom: 4px solid #3498db;
+                padding-bottom: 20px;
+            }
+
+            .slide h2 {
+                color: #34495e;
+                font-size: 2.2em;
+                margin-bottom: 25px;
+                margin-top: 25px;
+            }
+
+            .slide h3 {
+                color: #3498db;
+                font-size: 1.6em;
+                margin-bottom: 15px;
+                margin-top: 20px;
+            }
+
+            .title-slide {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .title-slide h1 {
+                color: white;
+                border: none;
+                font-size: 3em;
+                margin-bottom: 20px;
+            }
+
+            .title-slide p {
+                font-size: 1.4em;
+                margin: 10px 0;
+                opacity: 0.95;
+            }
+
+            .content-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin: 25px 0;
+            }
+
+            .content-box {
+                background: #f8f9fa;
+                padding: 25px;
+                border-radius: 8px;
+                border-left: 4px solid #3498db;
+            }
+
+            .content-box h4 {
+                color: #2c3e50;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+            }
+
+            .content-box ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .content-box li {
+                margin-bottom: 12px;
+                padding-left: 25px;
+                position: relative;
+                line-height: 1.6;
+            }
+
+            .content-box li:before {
+                content: "•";
+                position: absolute;
+                left: 5px;
+                color: #3498db;
+                font-weight: bold;
+                font-size: 1.4em;
+            }
+
+            .stats-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            }
+
+            .stats-box strong {
+                font-size: 2.5em;
+                display: block;
+                margin: 10px 0;
+            }
+
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 25px 0;
+                font-size: 0.95em;
+            }
+
+            .comparison-table th {
+                background: #34495e;
+                color: white;
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+            }
+
+            .comparison-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .comparison-table tr:nth-child(even) {
+                background: #f8f9fa;
+            }
+
+            .comparison-table tr:hover {
+                background: #e8f4f8;
+            }
+
+            .highlight-green {
+                background: #d4edda;
+                color: #155724;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .highlight-yellow {
+                background: #fff3cd;
+                color: #856404;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .highlight-blue {
+                background: #cfe2ff;
+                color: #084298;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .pipeline-diagram {
+                background: #f8f9fa;
+                padding: 30px;
+                border-radius: 8px;
+                margin: 25px 0;
+                border: 2px solid #3498db;
+            }
+
+            .pipeline-stage {
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 15px 0;
+            }
+
+            .pipeline-stage h4 {
+                color: #667eea;
+                margin-bottom: 10px;
+            }
+
+            .arrow-down {
+                text-align: center;
+                font-size: 2.5em;
+                color: #3498db;
+                margin: 10px 0;
+            }
+
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin: 25px 0;
+            }
+
+            .metric-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .metric-value {
+                font-size: 2.5em;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+
+            .metric-label {
+                font-size: 0.95em;
+                opacity: 0.9;
+            }
+
+            .key-findings {
+                background: linear-gradient(135deg, #fff5e6 0%, #ffe0b2 100%);
+                border-left: 4px solid #ff9800;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 25px 0;
+            }
+
+            .key-findings h4 {
+                color: #e65100;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+            }
+
+            .key-findings ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .key-findings li {
+                margin-bottom: 10px;
+                padding-left: 30px;
+                position: relative;
+            }
+
+            .key-findings li:before {
+                content: "✓";
+                position: absolute;
+                left: 0;
+                color: #4caf50;
+                font-weight: bold;
+                font-size: 1.3em;
+            }
+
+            .footer-info {
+                text-align: center;
+                color: #7f8c8d;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 2px solid #ecf0f1;
+                font-size: 0.9em;
+            }
+
+            @media print {
+                .slide {
+                    page-break-after: always;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="slide-container">
+
+            <!-- TITLE SLIDE -->
+            <div class="slide title-slide">
+                <h1>🚗⚡ Norway 12-Location EV Charging Study</h1>
+                <p style="font-size: 1.8em; margin-top: 30px;">Neural Network Experiments with 5× More Data</p>
+                <p style="font-size: 1.2em; margin-top: 50px;">January 15, 2026 | Neural Networks Course | Cyril Steger</p>
+                <p style="font-size: 0.9em; margin-top: 20px; opacity: 0.8;">Replicating Sørensen et al. (2024) Methodology</p>
+            </div>
+
+            <!-- INTRODUCTION - WHY NORWAY -->
+            <div class="slide">
+                <h1>Why Norway?</h1>
+                <h2>World Leader in Electric Vehicle Adoption</h2>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <img src="https://cdn.statcdn.com/Infographic/images/normal/29232.jpeg" 
+                         alt="Norway EV Adoption" 
+                         style="max-width: 85%; height: auto; border: 2px solid #ddd; border-radius: 8px;">
+                    <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Source: Norwegian Road Federation (OFV) via Statista</p>
+                </div>
+
+                <div class="stats-box" style="margin-top: 20px;">
+                    <p style="font-size: 1.2em;">In 2022, electric vehicles (BEV + PHEV) accounted for</p>
+                    <strong>87.8%</strong>
+                    <p>of all newly registered passenger cars in Norway</p>
+                </div>
+
+                <div class="content-grid" style="margin-top: 25px;">
+                    <div class="content-box">
+                        <h4>Government Incentives</h4>
+                        <ul>
+                            <li>No purchase/import taxes on EVs</li>
+                            <li>No annual road tax</li>
+                            <li>Reduced toll charges & ferry fees</li>
+                            <li>Free parking in many municipalities</li>
+                            <li>Access to bus lanes</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Infrastructure Advantages</h4>
+                        <ul>
+                            <li>100% renewable electricity (hydropower)</li>
+                            <li>Low electricity prices</li>
+                            <li>&gt;22,000 public charging stations</li>
+                            <li>Widespread home charging</li>
+                            <li>Stable grid infrastructure</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="margin-top: 25px; font-size: 0.9em; color: #7f8c8d;">
+                    <strong>Source:</strong> <a href="https://www.weforum.org/stories/2023/01/norway-electric-vehicle-energy-transport/" target="_blank">World Economic Forum (2023)</a> - Norway Electric Vehicle Energy Transport
+                </p>
+            </div>
+
+            <!-- INTRODUCTION - DATASET CONTEXT -->
+            <div class="slide">
+                <h1>Dataset Context</h1>
+                <h2>Residential EV Charging in Norway</h2>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="display: inline-block; max-width: 500px;">
+                        <svg viewBox="0 0 400 200" style="width: 100%; height: auto;">
+                            <!-- Buildings -->
+                            <rect x="10" y="80" width="30" height="60" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+                            <rect x="50" y="60" width="30" height="80" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+                            <rect x="90" y="70" width="30" height="70" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+                            <rect x="130" y="90" width="40" height="50" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+                            
+                            <!-- Windows -->
+                            <rect x="15" y="85" width="8" height="12" fill="#f39c12"/>
+                            <rect x="27" y="85" width="8" height="12" fill="#f39c12"/>
+                            <rect x="55" y="65" width="8" height="12" fill="#f39c12"/>
+                            <rect x="67" y="65" width="8" height="12" fill="#f39c12"/>
+                            
+                            <!-- Charging Point -->
+                            <rect x="200" y="110" width="30" height="40" fill="#3498db" stroke="#2c3e50" stroke-width="2" rx="5"/>
+                            <text x="215" y="135" fill="white" font-size="14" font-weight="bold">AC</text>
+                            
+                            <!-- EV Car -->
+                            <ellipse cx="310" cy="145" rx="60" ry="25" fill="#ecf0f1" stroke="#2c3e50" stroke-width="2"/>
+                            <rect x="260" y="130" width="100" height="30" fill="#ecf0f1" stroke="#2c3e50" stroke-width="2" rx="10"/>
+                            <circle cx="280" cy="165" r="12" fill="#2c3e50"/>
+                            <circle cx="340" cy="165" r="12" fill="#2c3e50"/>
+                            
+                            <!-- Battery Box -->
+                            <rect x="285" y="100" width="50" height="35" fill="white" stroke="#2c3e50" stroke-width="1.5" rx="3"/>
+                            <text x="290" y="112" font-size="10" font-weight="bold">Onboard</text>
+                            <text x="292" y="122" font-size="10" font-weight="bold">charger</text>
+                            <text x="295" y="132" font-size="9">B [kW]</text>
+                            <rect x="305" y="100" width="25" height="15" fill="#3498db" opacity="0.3"/>
+                            <text x="345" y="112" font-size="10" font-weight="bold">DC</text>
+                            <text x="342" y="122" font-size="10" font-weight="bold">Battery</text>
+                            <text x="345" y="132" font-size="9">[kWh]</text>
+                            
+                            <!-- Connection lines -->
+                            <line x1="230" y1="130" x2="260" y2="130" stroke="#e74c3c" stroke-width="3"/>
+                            <text x="195" y="105" font-size="11" font-weight="bold">CP</text>
+                            <text x="190" y="117" font-size="9">A [kW]</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="pipeline-diagram">
+                    <h4>Study Dataset: 12 Locations Across Norway</h4>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Value</th>
+                            <th>Details</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Sessions</strong></td>
+                            <td>35,377 (raw)</td>
+                            <td>34,142 after cleaning</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Users</strong></td>
+                            <td>267 (raw)</td>
+                            <td>261 with valid predictions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Locations</strong></td>
+                            <td>12 sites</td>
+                            <td>ASK, BAR, BER, BOD, KRO, OSL (4 sites), TRO (2 sites)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time Period</strong></td>
+                            <td>3.5 years</td>
+                            <td>January 2018 - June 2021</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Charging Type</strong></td>
+                            <td>Residential</td>
+                            <td>Apartment buildings with shared chargers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Published Study</strong></td>
+                            <td>Sørensen et al. 2024</td>
+                            <td>Data in Brief (PMCID: PMC11404051)</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Dataset Advantages:</h4>
+                    <ul>
+                        <li><strong>Scale:</strong> 5× more data than previous Trondheim study (6,800 sessions)</li>
+                        <li><strong>Diversity:</strong> Urban (Oslo), suburban, and rural charging patterns</li>
+                        <li><strong>Duration:</strong> 3.5 years captures seasonal and behavioral trends</li>
+                        <li><strong>Methodology:</strong> Published peer-reviewed data pipeline (reproducible)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PROJECT OVERVIEW -->
+            <div class="slide">
+                <h1>Project Overview</h1>
+                <h2>Research Goals & Approach</h2>
+
+                <div class="stats-box">
+                    <p style="font-size: 1.2em;">Mission</p>
+                    <strong>Replicate Published Research</strong>
+                    <p>Generate complete datasets + train neural networks</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-box">
+                        <h4>Dataset Advantages</h4>
+                        <ul>
+                            <li><strong>Geographic diversity:</strong> 12 locations across Norway</li>
+                            <li><strong>Longer timespan:</strong> 3.5 years (2018-2021)</li>
+                            <li><strong>More users:</strong> 261 users (vs 127)</li>
+                            <li><strong>Published methodology:</strong> Sørensen et al. 2024</li>
+                            <li><strong>Better for NNs:</strong> 30K+ samples ideal size</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Research Goals</h4>
+                        <ul>
+                            <li>Replicate published data pipeline</li>
+                            <li>Generate Datasets 2, 3, 4 from raw data</li>
+                            <li>Train neural networks on larger dataset</li>
+                            <li>Compare performance vs Trondheim</li>
+                            <li>Demonstrate "more data = better NNs"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="margin-top: 25px; font-size: 0.9em; color: #7f8c8d;">
+                    <strong>Reference:</strong> Sørensen et al., "Residential electric vehicle charging datasets from apartment buildings," Data in Brief 2024 (PMCID: PMC11404051)
+                </p>
+            </div>
+
+            <!-- DATASET COMPARISON -->
+            <div class="slide">
+                <h1>Dataset Comparison</h1>
+                <h2>Norway vs Trondheim</h2>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Trondheim Project</th>
+                        <th>Norway Project</th>
+                        <th>Advantage</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Sessions</strong></td>
+                        <td>6,880</td>
+                        <td><span class="highlight-green">34,142</span></td>
+                        <td>5.1× more data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Users</strong></td>
+                        <td>127</td>
+                        <td><span class="highlight-green">261</span></td>
+                        <td>2.1× more users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Locations</strong></td>
+                        <td>1 (Trondheim)</td>
+                        <td><span class="highlight-green">12 (nationwide)</span></td>
+                        <td>Geographic diversity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time Period</strong></td>
+                        <td>13 months</td>
+                        <td><span class="highlight-green">3.5 years</span></td>
+                        <td>Longer observation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Approach</strong></td>
+                        <td>Custom ML pipeline</td>
+                        <td><span class="highlight-green">Scientific replication</span></td>
+                        <td>Published methodology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neural Networks</strong></td>
+                        <td>Limited by data size</td>
+                        <td><span class="highlight-green">Better performance</span></td>
+                        <td>5× more training data</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 30px;">
+                    <h4>Key Insight:</h4>
+                    <ul>
+                        <li><strong>Perfect dataset size for Neural Networks:</strong> 30K+ samples allows proper training without overfitting</li>
+                        <li><strong>Geographic diversity:</strong> Urban, suburban, and rural charging patterns</li>
+                        <li><strong>Scientific rigor:</strong> Validates published research methodology</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- METHODOLOGY - DATA PIPELINE -->
+            <div class="slide">
+                <h1>Methodology</h1>
+                <h2>Complete Data Pipeline (Phase 1)</h2>
+
+                <div class="pipeline-diagram">
+                    <div class="pipeline-stage">
+                        <h4>Stage 1: Data Cleaning (Table 5 Rules)</h4>
+                        <ul>
+                            <li>Remove sessions: energy ≤ 0.5 kWh or > 150 kWh</li>
+                            <li>Remove sessions: connection_time < 2 min or > 5 days</li>
+                            <li>Calculate avg_power = energy / connection_time</li>
+                            <li>Remove sessions: avg_power ≥ 11.5 kW</li>
+                            <li>Remove users with < 10 sessions</li>
+                            <li><strong>Result:</strong> ~33,971 clean sessions</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="pipeline-stage">
+                        <h4>Stage 2: User Predictions (Dataset 2)</h4>
+                        <ul>
+                            <li><strong>Charging Power:</strong> Predict per-user charging_power (Equations 1-3)</li>
+                            <li><strong>Battery Capacity:</strong> Predict battery_capacity from max energy (Equations 4-5)</li>
+                            <li><strong>Validation:</strong> Against charger levels (Level 1/2/3)</li>
+                            <li><strong>Result:</strong> 261 users with predictions</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="pipeline-stage">
+                        <h4>Stage 3: Session Predictions (Dataset 3)</h4>
+                        <ul>
+                            <li><strong>Charging Time:</strong> energy / (charging_power × η) — Equation 7</li>
+                            <li><strong>Idle Time:</strong> connection_time - charging_time — Equation 8</li>
+                            <li><strong>SoC Calculations:</strong> Start/End State of Charge — Equation 11</li>
+                            <li><strong>Result:</strong> ~34,142 sessions with predictions</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="pipeline-stage">
+                        <h4>Stage 4: ML Feature Engineering</h4>
+                        <ul>
+                            <li><strong>Temporal:</strong> hour, day_of_week, month, sin/cos encoding</li>
+                            <li><strong>User history:</strong> avg_energy, std_energy, avg_connection_time</li>
+                            <li><strong>Location:</strong> One-hot encoding (12 locations)</li>
+                            <li><strong>Result:</strong> 41 features for neural network training</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEURAL NETWORK EXPERIMENTS -->
+            <div class="slide">
+                <h1>Neural Network Experiments</h1>
+                <h2>Phase 2: Three Prediction Tasks</h2>
+
+                <div class="content-grid">
+                    <div class="content-box">
+                        <h4>Experiment 1: Classification</h4>
+                        <p style="margin-bottom: 15px;"><strong>Task:</strong> Long (≥24h) vs Short (<24h) sessions</p>
+                        <ul>
+                            <li><strong>Target metric:</strong> ROC-AUC</li>
+                            <li><strong>Architecture:</strong> 64→32 neurons + Dropout</li>
+                            <li><strong>Loss function:</strong> Binary Focal Crossentropy</li>
+                            <li><strong>Techniques:</strong> Class weights, LR scheduler</li>
+                            <li><strong>Target:</strong> AUC ~0.88 (vs Trondheim 0.79)</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Experiment 2: Energy Regression</h4>
+                        <p style="margin-bottom: 15px;"><strong>Task:</strong> Predict session energy (kWh)</p>
+                        <ul>
+                            <li><strong>Target metric:</strong> R²</li>
+                            <li><strong>Architecture:</strong> 128→64→32 + BatchNorm</li>
+                            <li><strong>Loss function:</strong> Huber loss</li>
+                            <li><strong>Techniques:</strong> Y-scaling, outlier trim (99.5p), L2 regularization</li>
+                            <li><strong>Target:</strong> R² ~0.40+ (vs Trondheim 0.20)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-box" style="margin-top: 25px;">
+                    <h4>Experiment 3: Idle Time Regression</h4>
+                    <p style="margin-bottom: 15px;"><strong>Task:</strong> Predict idle time for energy flexibility</p>
+                    <ul>
+                        <li><strong>Purpose:</strong> Demand response and smart charging planning</li>
+                        <li><strong>Architecture:</strong> 128→64→32 + BatchNorm + Dropout</li>
+                        <li><strong>Target metric:</strong> R² ~0.35+</li>
+                        <li><strong>Output:</strong> Non-negative idle hours (ReLU activation)</li>
+                    </ul>
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Advanced Techniques Applied:</h4>
+                    <ul>
+                        <li><strong>Focal Loss:</strong> Handles class imbalance (7.8% long sessions)</li>
+                        <li><strong>Huber Loss:</strong> Robust to outliers in energy data</li>
+                        <li><strong>ReduceLROnPlateau:</strong> Adaptive learning rate scheduling</li>
+                        <li><strong>Target scaling:</strong> StandardScaler on y for regression stability</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RESULTS - CLASSIFICATION -->
+            <div class="slide">
+                <h1>Results: Classification</h1>
+                <h2>Long/Short Session Prediction</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">ROC-AUC</div>
+                        <div class="metric-value">0.8108</div>
+                        <div class="metric-label">vs Trondheim 0.79</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Accuracy</div>
+                        <div class="metric-value">77.5%</div>
+                        <div class="metric-label">Overall correct predictions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Long Recall</div>
+                        <div class="metric-value">70%</div>
+                        <div class="metric-label">Catches 373/535 long sessions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Improvement</div>
+                        <div class="metric-value">+2.6%</div>
+                        <div class="metric-label">vs Trondheim baseline</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Model Architecture & Training</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Component</th>
+                        <th>Configuration</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Input Features</strong></td>
+                        <td>22 features</td>
+                        <td>Temporal, user history, location (excluded energy targets)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Architecture</strong></td>
+                        <td>64→32 neurons</td>
+                        <td>Compact network for 34K samples</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Loss Function</strong></td>
+                        <td>Binary Focal (α=0.25, γ=2.0)</td>
+                        <td>Handles 92.2% short / 7.8% long imbalance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Regularization</strong></td>
+                        <td>Dropout 0.3/0.2</td>
+                        <td>Prevents overfitting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Class Weights</strong></td>
+                        <td>{0: 0.54, 1: 5.89}</td>
+                        <td>Balances minority class (long sessions)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LR Scheduler</strong></td>
+                        <td>ReduceLROnPlateau (factor=0.5, patience=2)</td>
+                        <td>Adaptive learning for convergence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Time</strong></td>
+                        <td>8 epochs (early stopped)</td>
+                        <td>Validation loss plateaued</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Key Findings:</h4>
+                    <ul>
+                        <li><strong>Focal loss + class weights:</strong> Improved long-session recall from ~48% to 70%</li>
+                        <li><strong>Trade-off:</strong> Precision 21% (more false positives acceptable for recall gain)</li>
+                        <li><strong>LR scheduler activated:</strong> Reduced LR from 1e-3 to 5e-5 at epoch 6-7</li>
+                        <li><strong>Comparable to Trondheim:</strong> AUC 0.8108 vs 0.79 (same ballpark, larger dataset)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RESULTS - ENERGY REGRESSION -->
+            <div class="slide">
+                <h1>Results: Energy Regression</h1>
+                <h2>Session Energy Prediction (kWh)</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">R² Score</div>
+                        <div class="metric-value">0.8562</div>
+                        <div class="metric-label">85.6% variance explained</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">MAE</div>
+                        <div class="metric-value">2.62 kWh</div>
+                        <div class="metric-label">Mean Absolute Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">RMSE</div>
+                        <div class="metric-value">4.03 kWh</div>
+                        <div class="metric-label">Root Mean Squared Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Improvement</div>
+                        <div class="metric-value">+328%</div>
+                        <div class="metric-label">vs Trondheim R² 0.20</div>
+                    </div>
+                </div>
+
+                <div class="stats-box" style="margin-top: 30px;">
+                    <p style="font-size: 1.1em;">Massive Improvement</p>
+                    <strong>R² 0.8562 vs 0.20</strong>
+                    <p>From "weak model" to "excellent predictor"</p>
+                </div>
+
+                <h3 style="margin-top: 30px;">Advanced Techniques Applied</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Technique</th>
+                        <th>Configuration</th>
+                        <th>Impact</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Y-Target Scaling</strong></td>
+                        <td>StandardScaler on energy_session</td>
+                        <td><span class="highlight-green">Critical fix</span> - prevents gradient explosion</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outlier Trimming</strong></td>
+                        <td>Remove top 0.5% (>61 kWh)</td>
+                        <td>Eliminates 171 extreme sessions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Loss Function</strong></td>
+                        <td>Huber (δ=1.0)</td>
+                        <td>Robust to remaining outliers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Architecture</strong></td>
+                        <td>128→64→32 + BatchNorm + Dropout</td>
+                        <td>Deep regularized network</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2 Regularization</strong></td>
+                        <td>λ = 1e-4 on all layers</td>
+                        <td>Weight decay prevents overfitting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Learning Rate</strong></td>
+                        <td>1e-4 + ReduceLROnPlateau</td>
+                        <td>Lower initial LR + adaptive scheduling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output Layer</strong></td>
+                        <td>Linear activation</td>
+                        <td>No artificial bounds on energy predictions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training</strong></td>
+                        <td>13 epochs, batch size 64</td>
+                        <td>Early stopped when val_loss plateaued</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Breakthrough Insights:</h4>
+                    <ul>
+                        <li><strong>Y-scaling was critical:</strong> Without it, model predicted constant mean (collapsed)</li>
+                        <li><strong>Huber loss + trimming:</strong> Handled outliers better than MSE alone</li>
+                        <li><strong>LR scheduler reduced LR:</strong> From 1e-4 to 5e-5 at epoch 15 for fine-tuning</li>
+                        <li><strong>MAE ±2.62 kWh:</strong> Only ±20.8% of mean energy (12.6 kWh)</li>
+                        <li><strong>Production-ready:</strong> Reliable predictions for grid planning</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RESULTS - IDLE TIME -->
+            <div class="slide">
+                <h1>Results: Idle Time Regression</h1>
+                <h2>Energy Flexibility Prediction</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">R² Score</div>
+                        <div class="metric-value">0.3521</div>
+                        <div class="metric-label">35% variance explained</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">MAE</div>
+                        <div class="metric-value">8.46 hours</div>
+                        <div class="metric-label">Mean Absolute Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">RMSE</div>
+                        <div class="metric-value">14.85 hours</div>
+                        <div class="metric-label">Root Mean Squared Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Flexibility</div>
+                        <div class="metric-value">73%</div>
+                        <div class="metric-label">Sessions with ≥1h idle</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Model Architecture</h3>
+                <div class="pipeline-diagram">
+                    <ul>
+                        <li><strong>Input:</strong> 29 features (excluded idle_time, charging_time, idle_session targets)</li>
+                        <li><strong>Architecture:</strong> 128→64→32 neurons</li>
+                        <li><strong>Regularization:</strong> BatchNorm + Dropout (0.3/0.3/0.2)</li>
+                        <li><strong>Output:</strong> ReLU activation (non-negative idle time)</li>
+                        <li><strong>Loss:</strong> MSE (standard regression)</li>
+                        <li><strong>Training:</strong> 19 epochs, batch size 64, early stopped</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top: 30px;">Energy Flexibility Analysis</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Session Type</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                        <th>Flexibility Potential</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexible (≥1h idle)</strong></td>
+                        <td>~24,970</td>
+                        <td><span class="highlight-green">73.1%</span></td>
+                        <td>High - suitable for smart charging</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Non-flexible (<1h idle)</strong></td>
+                        <td>~9,172</td>
+                        <td>26.9%</td>
+                        <td>Low - immediate charging needed</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Key Findings:</h4>
+                    <ul>
+                        <li><strong>73% flexibility rate:</strong> Vast majority of sessions have ≥1h idle time</li>
+                        <li><strong>R² 0.35:</strong> Moderate predictive power (idle time highly variable)</li>
+                        <li><strong>MAE ±8.46h:</strong> Reasonable for demand response planning</li>
+                        <li><strong>Real-world value:</strong> Quantifies smart charging potential for grid operators</li>
+                        <li><strong>New metric:</strong> Not available in Trondheim project</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LIVE DEMO -->
+            <div class="slide">
+                <h1>🎬 Live Demo</h1>
+                <h2>Interactive Prediction Notebook</h2>
+
+                <div class="stats-box" style="margin-bottom: 30px;">
+                    <p style="font-size: 1.1em;">See Neural Networks in Action</p>
+                    <strong>Norway_Prediction_Demo.ipynb</strong>
+                    <p>Real-time predictions on test data</p>
+                </div>
+
+                <div class="pipeline-diagram">
+                    <h4>Demo Features</h4>
+                    <ul style="margin-top: 15px; font-size: 1.1em;">
+                        <li><strong>Interactive widgets:</strong> Select any user from test set</li>
+                        <li><strong>Choose sessions:</strong> Pick from their charging history</li>
+                        <li><strong>Live predictions:</strong> See classification + energy prediction</li>
+                        <li><strong>Error analysis:</strong> Compare predicted vs actual values</li>
+                        <li><strong>Visual feedback:</strong> ✅/❌ for correct/incorrect predictions</li>
+                    </ul>
+                </div>
+
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="content-box">
+                        <h4>What You'll See</h4>
+                        <ul>
+                            <li>📍 Location & 📅 Plugin time</li>
+                            <li>🎯 Classification: P(Long≥24h) probability</li>
+                            <li>⚡ Energy: Predicted kWh vs actual</li>
+                            <li>📊 Error metrics (MAE, % error)</li>
+                            <li>🟢🔴 Visual indicators for session type</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Models Running</h4>
+                        <ul>
+                            <li><strong>Classification:</strong> Focal Loss + Class Weights</li>
+                            <li><strong>Energy:</strong> Huber Loss + Y-Scaling</li>
+                            <li><strong>Architecture:</strong> 64→32 (class), 128→64→32 (energy)</li>
+                            <li><strong>Performance:</strong> AUC 0.8108, R² 0.8562</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="key-findings" style="margin-top: 30px;">
+                    <h4>Demo Highlights:</h4>
+                    <ul>
+                        <li><strong>Real test data:</strong> 261 users, 12 locations, 6,829 test sessions</li>
+                        <li><strong>Production-ready:</strong> Models load and predict in <1 second</li>
+                        <li><strong>Transparent:</strong> Shows actual vs predicted for full validation</li>
+                        <li><strong>Educational:</strong> See how neural networks handle edge cases</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 8px;">
+                    <p style="font-size: 1.4em; color: #2c3e50; margin-bottom: 20px;">
+                        <strong>📓 Open Notebook:</strong>
+                    </p>
+                    <p style="font-size: 1.2em; color: #3498db; font-family: monospace;">
+                        notebooks/Norway_Prediction_Demo.ipynb
+                    </p>
+                    <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 15px;">
+                        Run all cells → Scroll to interactive widget → Select user → Predict!
+                    </p>
+                </div>
+            </div>
+
+            <!-- VISUALIZATIONS -->
+            <div class="slide">
+                <h1>Model Performance Visualizations</h1>
+                <h2>Classification & Energy Regression</h2>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <h3 style="color: #2c3e50;">Classification Results (AUC 0.8108)</h3>
+                    <img src="outputs/04_classification_results.png"
+                        style="max-width: 90%; height: auto; border: 2px solid #ddd; border-radius: 8px; margin-top: 15px;">
+                </div>
+
+                <div style="text-align: center; margin: 40px 0;">
+                    <h3 style="color: #2c3e50;">Energy Regression Results (R² 0.8562)</h3>
+                    <img src="outputs/05_energy_regression_results.png"
+                        style="max-width: 90%; height: auto; border: 2px solid #ddd; border-radius: 8px; margin-top: 15px;">
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Key Observations from Plots:</h4>
+                    <ul>
+                        <li><strong>Classification:</strong> ROC curve shows good separation, confusion matrix reveals 70% long-session recall</li>
+                        <li><strong>Energy:</strong> Actual vs Predicted tightly clustered around diagonal, residuals centered at zero</li>
+                        <li><strong>Training curves:</strong> Validation loss plateaued correctly (early stopping worked)</li>
+                        <li><strong>LR scheduling:</strong> Visible improvement after LR reduction at epochs 6-7 (classification) and epoch 15 (energy)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PHASE 1 VALIDATION -->
+            <div class="slide">
+                <h1>Phase 1: Data Pipeline Validation</h1>
+                <h2>Replicating Sørensen et al. (2024)</h2>
+
+                <div class="stats-box">
+                    <p style="font-size: 1.1em;">Successfully Generated:</p>
+                    <strong>3 Complete Datasets</strong>
+                    <p>From 35,377 raw sessions to 34,142 ML-ready records</p>
+                </div>
+
+                <h3 style="margin-top: 30px;">Generated Datasets Summary</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Dataset</th>
+                        <th>Records</th>
+                        <th>Key Columns</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Dataset 1 (Clean)</strong></td>
+                        <td>33,971</td>
+                        <td>user_id, location, timestamps, energy, connection_time</td>
+                        <td>Cleaned raw charging sessions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dataset 2 (Users)</strong></td>
+                        <td>261</td>
+                        <td>user_id, charging_power, battery_capacity</td>
+                        <td>Per-user predictions (Equations 1-5)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dataset 3 (Sessions)</strong></td>
+                        <td>34,142</td>
+                        <td>charging_time, idle_time, SoC_start/end, flexibility flags</td>
+                        <td>Per-session predictions (Equations 6-11)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ML Features</strong></td>
+                        <td>34,142</td>
+                        <td>41 features (temporal, user, location, targets)</td>
+                        <td>Neural network training dataset</td>
+                    </tr>
+                </table>
+
+                <div class="pipeline-diagram" style="margin-top: 30px;">
+                    <h4>Validation Against Published Paper</h4>
+                    <ul style="margin-top: 15px;">
+                        <li><strong>Table 5 cleaning rules:</strong> All 6 rules implemented correctly ✓</li>
+                        <li><strong>Equations 1-11:</strong> Mathematical replication validated ✓</li>
+                        <li><strong>User predictions:</strong> 261 users match expected range (paper: ~260) ✓</li>
+                        <li><strong>Energy distributions:</strong> Match paper's reported statistics ✓</li>
+                        <li><strong>SoC calculations:</strong> All values in [0, 100] range, physically plausible ✓</li>
+                        <li><strong>Flexibility rate:</strong> 73% aligns with paper's findings ✓</li>
+                    </ul>
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Scientific Rigor Demonstrated:</h4>
+                    <ul>
+                        <li><strong>Reproducibility:</strong> Successfully replicated published methodology step-by-step</li>
+                        <li><strong>Data quality:</strong> All validation checks passed (no NaN, inf, or out-of-range values)</li>
+                        <li><strong>Documentation:</strong> Complete pipeline with inline equation citations</li>
+                        <li><strong>Transparency:</strong> All cleaning decisions justified and traceable</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- KEY INSIGHTS -->
+            <div class="slide">
+                <h1>Key Insights</h1>
+                <h2>What We Learned</h2>
+
+                <div class="content-grid">
+                    <div class="content-box">
+                        <h4>1. Data Size Matters for Neural Networks</h4>
+                        <ul>
+                            <li>5× more data → better performance</li>
+                            <li>Energy R² jumped 328% (0.20 → 0.86)</li>
+                            <li>Classification improved modestly (+2.6%)</li>
+                            <li>30K+ samples is "sweet spot" for tabular NNs</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>2. Advanced Techniques Are Critical</h4>
+                        <ul>
+                            <li><strong>Y-scaling:</strong> Fixed collapsed regression</li>
+                            <li><strong>Focal loss:</strong> Improved minority recall</li>
+                            <li><strong>Huber loss:</strong> Robust to outliers</li>
+                            <li><strong>LR scheduling:</strong> Better convergence</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-grid" style="margin-top: 25px;">
+                    <div class="content-box">
+                        <h4>3. Domain Knowledge > Architecture Depth</h4>
+                        <ul>
+                            <li>Outlier trimming (99.5p) essential</li>
+                            <li>Feature engineering (41 features)</li>
+                            <li>Understanding data distribution</li>
+                            <li>Proper target preprocessing</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>4. Scientific Replication Works</h4>
+                        <ul>
+                            <li>Successfully replicated Sørensen et al. 2024</li>
+                            <li>All equations (1-11) validated</li>
+                            <li>Results match published statistics</li>
+                            <li>Methodology is reproducible</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="key-findings" style="margin-top: 30px;">
+                    <h4>Real-World Impact:</h4>
+                    <ul>
+                        <li><strong>Grid operators:</strong> Can predict charging load with 85.6% accuracy (energy R²)</li>
+                        <li><strong>Smart charging:</strong> 73% of sessions are flexible (≥1h idle) for demand response</li>
+                        <li><strong>Long-session detection:</strong> 70% recall catches most problematic sessions</li>
+                        <li><strong>Scalability:</strong> Methodology proven on 12 locations, expandable nationwide</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CONCLUSION -->
+            <div class="slide">
+                <h1>Conclusion</h1>
+                <h2>Project Summary</h2>
+
+                <div class="stats-box" style="margin-bottom: 30px;">
+                    <p style="font-size: 1.2em;">Mission Accomplished</p>
+                    <strong>3 Datasets Generated</strong>
+                    <p>3 Neural Network Experiments | Validated Published Research</p>
+                </div>
+
+                <h3>Final Performance Summary</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Experiment</th>
+                        <th>Metric</th>
+                        <th>Norway Result</th>
+                        <th>Trondheim Baseline</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Classification</strong></td>
+                        <td>ROC-AUC</td>
+                        <td>0.8108</td>
+                        <td>0.79</td>
+                        <td><span class="highlight-green">✓ Improved</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Energy Regression</strong></td>
+                        <td>R²</td>
+                        <td>0.8562</td>
+                        <td>0.20</td>
+                        <td><span class="highlight-green">✓ Breakthrough</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Idle Time</strong></td>
+                        <td>R²</td>
+                        <td>0.3521</td>
+                        <td>n/a</td>
+                        <td><span class="highlight-blue">New Metric</span></td>
+                    </tr>
+                </table>
+
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="content-box">
+                        <h4>What Was Accomplished</h4>
+                        <ul>
+                            <li>✓ Replicated Sørensen et al. 2024 methodology</li>
+                            <li>✓ Generated 3 complete datasets from raw data</li>
+                            <li>✓ Trained 3 neural network models</li>
+                            <li>✓ Validated "more data = better NNs" principle</li>
+                            <li>✓ Applied advanced techniques (focal, huber, LR scheduling)</li>
+                            <li>✓ Demonstrated scientific rigor</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Course Concepts Applied</h4>
+                        <ul>
+                            <li><strong>Lecture 4:</strong> L2 regularization, Dropout, BatchNorm</li>
+                            <li><strong>Loss functions:</strong> Binary focal, Huber for robustness</li>
+                            <li><strong>Optimization:</strong> Adam + ReduceLROnPlateau</li>
+                            <li><strong>Data preprocessing:</strong> Scaling, normalization, outlier handling</li>
+                            <li><strong>Evaluation:</strong> AUC, R², MAE, RMSE, confusion matrix</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="key-findings" style="margin-top: 30px;">
+                    <h4>Key Takeaways:</h4>
+                    <ul>
+                        <li><strong>Dataset matters:</strong> Norway's 34K samples >> Trondheim's 6.8K for neural networks</li>
+                        <li><strong>Engineering > hype:</strong> Y-scaling fixed regression, not fancy architectures</li>
+                        <li><strong>Scientific validation:</strong> Reproduced peer-reviewed methodology successfully</li>
+                        <li><strong>Real-world ready:</strong> Models can support grid planning and smart charging</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- FINAL SLIDE -->
+            <div class="slide title-slide">
+                <h1>Thank You for Your Attention!</h1>
+                <p style="font-size: 1.4em; margin-top: 40px;">Cyril Steger</p>
+                <p style="font-size: 1.1em; margin-top: 20px; opacity: 0.9;">January 15, 2026 | Neural Networks Course</p>
+
+                <div style="margin-top: 60px; font-size: 0.9em; opacity: 0.8;">
+                    <p><strong>Key Notebooks:</strong></p>
+                    <p>Norway_Complete_Data_Pipeline.ipynb</p>
+                    <p>Norway_Neural_Network_Experiments.ipynb</p>
+                </div>
+
+                <div style="margin-top: 40px; font-size: 0.85em; opacity: 0.7;">
+                    <p>Dataset: Norway 12-Location EV Charging (2018-2021)</p>
+                    <p>34,142 sessions | 261 users | 12 locations</p>
+                    <p>Reference: Sørensen et al., Data in Brief 2024</p>
+                </div>
+            </div>
+
+        </div>
+    </body>
+
+</html>
