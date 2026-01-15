@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EV Charging Behavior Model - Neural Networks</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #1a1a1a;
+                color: #333;
+            }
+
+            .slide-container {
+                width: 100%;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .slide {
+                background: white;
+                border-radius: 10px;
+                padding: 60px;
+                margin-bottom: 30px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                min-height: 600px;
+                page-break-after: always;
+            }
+
+            .slide h1 {
+                color: #2c3e50;
+                font-size: 2.8em;
+                margin-bottom: 30px;
+                border-bottom: 4px solid #3498db;
+                padding-bottom: 20px;
+            }
+
+            .slide h2 {
+                color: #34495e;
+                font-size: 2.2em;
+                margin-bottom: 25px;
+                margin-top: 25px;
+            }
+
+            .slide h3 {
+                color: #3498db;
+                font-size: 1.6em;
+                margin-bottom: 15px;
+                margin-top: 20px;
+            }
+
+            .title-slide {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .title-slide h1 {
+                color: white;
+                border: none;
+                font-size: 3em;
+                margin-bottom: 20px;
+            }
+
+            .title-slide p {
+                font-size: 1.4em;
+                margin: 10px 0;
+                opacity: 0.95;
+            }
+
+            .content-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin: 25px 0;
+            }
+
+            .content-box {
+                background: #f8f9fa;
+                padding: 25px;
+                border-radius: 8px;
+                border-left: 4px solid #3498db;
+            }
+
+            .content-box h4 {
+                color: #2c3e50;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+            }
+
+            .content-box ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .content-box li {
+                margin-bottom: 12px;
+                padding-left: 25px;
+                position: relative;
+                line-height: 1.6;
+            }
+
+            .content-box li:before {
+                content: "•";
+                position: absolute;
+                left: 5px;
+                color: #3498db;
+                font-weight: bold;
+                font-size: 1.4em;
+            }
+
+            .stats-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            }
+
+            .stats-box strong {
+                font-size: 2.5em;
+                display: block;
+                margin: 10px 0;
+            }
+
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 25px 0;
+                font-size: 0.95em;
+            }
+
+            .comparison-table th {
+                background: #34495e;
+                color: white;
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+            }
+
+            .comparison-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .comparison-table tr:nth-child(even) {
+                background: #f8f9fa;
+            }
+
+            .comparison-table tr:hover {
+                background: #e8f4f8;
+            }
+
+            .highlight-green {
+                background: #d4edda;
+                color: #155724;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .highlight-yellow {
+                background: #fff3cd;
+                color: #856404;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .highlight-blue {
+                background: #cfe2ff;
+                color: #084298;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .pipeline-diagram {
+                background: #f8f9fa;
+                padding: 30px;
+                border-radius: 8px;
+                margin: 25px 0;
+                border: 2px solid #3498db;
+            }
+
+            .pipeline-stage {
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 15px 0;
+            }
+
+            .pipeline-stage h4 {
+                color: #667eea;
+                margin-bottom: 10px;
+            }
+
+            .arrow-down {
+                text-align: center;
+                font-size: 2.5em;
+                color: #3498db;
+                margin: 10px 0;
+            }
+
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin: 25px 0;
+            }
+
+            .metric-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .metric-value {
+                font-size: 2.5em;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+
+            .metric-label {
+                font-size: 0.95em;
+                opacity: 0.9;
+            }
+
+            .key-findings {
+                background: linear-gradient(135deg, #fff5e6 0%, #ffe0b2 100%);
+                border-left: 4px solid #ff9800;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 25px 0;
+            }
+
+            .key-findings h4 {
+                color: #e65100;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+            }
+
+            .key-findings ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .key-findings li {
+                margin-bottom: 10px;
+                padding-left: 30px;
+                position: relative;
+            }
+
+            .key-findings li:before {
+                content: "✓";
+                position: absolute;
+                left: 0;
+                color: #4caf50;
+                font-weight: bold;
+                font-size: 1.3em;
+            }
+
+            .footer-info {
+                text-align: center;
+                color: #7f8c8d;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 2px solid #ecf0f1;
+                font-size: 0.9em;
+            }
+
+            @media print {
+                .slide {
+                    page-break-after: always;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="slide-container">
+
+            <!-- TITLE SLIDE -->
+            <div class="slide title-slide">
+                <h1>🚗⚡ Electric Vehicle Charging Behavior Model in a Residential Complex in Norway</h1>
+                <p style="font-size: 1.8em; margin-top: 30px;">Neural Networks & Two-Stage Pipeline</p>
+                <p style="font-size: 1.2em; margin-top: 50px;">February 5, 2025 | DMI | Cyril Steger</p>
+                <p style="font-size: 0.9em; margin-top: 20px; opacity: 0.8;">Trondheim Dataset
+                </p>
+            </div>
+
+            <!-- INTRODUCTION - STATISTICS -->
+            <div class="slide">
+                <h1>Introduction</h1>
+                <h2>Statistics, Data</h2>
+
+                <div class="stats-box">
+                    <p style="font-size: 1.2em;">In 2022, electric vehicles (BEV + PHEV) accounted for up to</p>
+                    <strong>79%</strong>
+                    <p>of newly registered vehicles in Norway</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-box">
+                        <h4>Government Support</h4>
+                        <ul>
+                            <li>All electricity from renewable sources</li>
+                            <li>Low price per kWh</li>
+                            <li>No import tariffs on electric vehicles</li>
+                            <li>No registration fees</li>
+                            <li>&lt; 22,000 public charging stations</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Why Norway?</h4>
+                        <ul>
+                            <li>Highest EV penetration in the world</li>
+                            <li>100% renewable energy (hydropower)</li>
+                            <li>Stable legal environment for data</li>
+                            <li>Publicly available charging data</li>
+                            <li>Representative model for the future</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="margin-top: 25px; font-size: 0.9em; color: #7f8c8d;">
+                    <strong>Source:</strong> World Economic Forum (2023), Norway Electric Vehicle Energy Transport
+                </p>
+            </div>
+
+            <!-- INTRODUCTION - DATASET -->
+            <div class="slide">
+                <h1>Introduction</h1>
+                <h2>Dataset, Information, Study</h2>
+
+                <div class="content-box" style="margin-bottom: 25px;">
+                    <h4>Total of 7 Datasets, selected from these:</h4>
+                    <ul>
+                        <li><strong>Dataset 1:</strong> EV Charging DateTime Sessions
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>127 monitored users (Unique ID)</li>
+                                <li>42 garages in residential complex</li>
+                                <li>Private × shared chargers</li>
+                            </ul>
+                        </li>
+                        <li><strong>Dataset 2:</strong> Norway Trondheim Weather Data (external)
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Detailed weather data (UV radiation, wind, rain, clouds...)</li>
+                                <li>Hourly granularity</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="stats-box">
+                    <p style="font-size: 1.1em;">Dataset size:</p>
+                    <strong>~6,880 records</strong>
+                    <p>December 1, 2018 - December 31, 2019 (13 months)</p>
+                </div>
+
+                <div class="content-grid" style="margin-top: 25px;">
+                    <div class="content-box">
+                        <h4>Target Variable (Classification)</h4>
+                        <ul>
+                            <li><strong>Charging_Duration_Binary</strong> (flag)</li>
+                            <li>"Long" (≥24h) / "Short" (&lt;24h)</li>
+                            <li>27% Long, 73% Short</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Target Variable (Regression)</h4>
+                        <ul>
+                            <li><strong>Duration_hours</strong> (continuous)</li>
+                            <li>Range: 0.003 - 255 hours</li>
+                            <li>Median: ~10 hours</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="margin-top: 25px; font-size: 0.9em; color: #7f8c8d;">
+                    <a href="https://www.kaggle.com/datasets/anshtanwar/residential-ev-chargingfrom-apartment-buildings"
+                        target="_blank"><strong>Source:</strong> "Residential electric vehicle charging datasets from
+                        apartment buildings in
+                        Norway"</a>
+                </p>
+            </div>
+
+            <!-- DATA CHARACTERISTICS -->
+            <div class="slide">
+                <h1>Data Characteristics</h1>
+                <h2>Predictors, Variables, Description</h2>
+
+                <div class="content-grid">
+                    <div class="content-box">
+                        <h4>Dataset 1 - EV Charging Sessions</h4>
+                        <ul>
+                            <li><strong>Temporal:</strong> Start_plugin, End_plugout, Duration_hours</li>
+                            <li><strong>User:</strong> User_ID, Garage_ID</li>
+                            <li><strong>Energy:</strong> El_kWh (delivered energy)</li>
+                            <li><strong>Derived:</strong> hour_plugin, weekday_plugin, month_plugin</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Dataset 2 - Local Weather</h4>
+                        <ul>
+                            <li><strong>Temperature:</strong> temp (°C)</li>
+                            <li><strong>Precipitation:</strong> precip (mm), rain_mm</li>
+                            <li><strong>Cloudiness:</strong> clouds (%)</li>
+                            <li><strong>Wind:</strong> wind_speed (km/h)</li>
+                            <li><strong>Solar radiation:</strong> solar_rad, max_uv</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pipeline-diagram">
+                    <h4 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Total of 15 predictors after
+                        cleaning</h4>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Category</th>
+                            <th>Count</th>
+                            <th>Examples</th>
+                        </tr>
+                        <tr>
+                            <td>Temporal</td>
+                            <td>3</td>
+                            <td>hour, weekday, month</td>
+                        </tr>
+                        <tr>
+                            <td>Weather</td>
+                            <td>6</td>
+                            <td>temp, clouds, precip, wind, solar_rad, max_uv</td>
+                        </tr>
+                        <tr>
+                            <td>User</td>
+                            <td>4</td>
+                            <td>User_ID, Garage_ID, avg_duration, session_count</td>
+                        </tr>
+                        <tr>
+                            <td>Energy</td>
+                            <td>1</td>
+                            <td>El_kWh (kWh delivered)</td>
+                        </tr>
+                        <tr>
+                            <td>Derived</td>
+                            <td>1</td>
+                            <td>is_weekend (flag)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DATA PREPARATION -->
+            <div class="slide">
+                <h1>Data Preparation & Feature Engineering</h1>
+                <h2>Cleaning, Merging, Feature Creation</h2>
+
+                <div class="pipeline-stage">
+                    <h4>1. Data Cleaning</h4>
+                    <ul>
+                        <li><strong>Datetime standardization:</strong> Converted all timestamps to YYYY-MM-DD HH:MM:SS
+                            format</li>
+                        <li><strong>Outlier removal:</strong> Filtered sessions >180h (0.5% of data, unrealistic long
+                            sessions)</li>
+                        <li><strong>Validation:</strong> Ensured Start_plugin < End_plugin, removed invalid
+                                sequences</li>
+                        <li><strong>Missing data:</strong> Dropped rows with missing User_ID, Garage_ID, or timestamps
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="pipeline-stage">
+                    <h4>2. Dataset Merging</h4>
+                    <ul>
+                        <li><strong>EV Sessions:</strong> 6,880 charging records (User_ID, Garage_ID, timestamps,
+                            El_kWh)</li>
+                        <li><strong>Weather Data:</strong> Hourly measurements (temp, precip, wind_spd, clouds,
+                            solar_rad)</li>
+                        <li><strong>Join method:</strong> Left join on Start_plugin_dt (rounded to nearest hour) →
+                            weather conditions at session start</li>
+                        <li><strong>Result:</strong> Unified dataset with charging + weather features</li>
+                    </ul>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="pipeline-stage">
+                    <h4>3. Advanced Feature Creation</h4>
+                    <ul>
+                        <li><strong>User behavior patterns:</strong> GroupBy User_ID → compute preferred_hour (mode),
+                            weekend_pct, night_pct, avg_power_rate (kWh/duration)</li>
+                        <li><strong>Garage characteristics:</strong> GroupBy Garage_ID → identify peak_hour,
+                            capacity_proxy (sessions/user ratio)</li>
+                        <li><strong>Temporal interactions:</strong> Binary flags (is_weekend, is_night, is_morning_rush)
+                            + energy_per_hour</li>
+                        <li><strong>Impact:</strong> 11 behavioral features → 59% error reduction (MAE 4.39h → 1.78h)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PROJECT GOALS -->
+            <div class="slide">
+                <h1>Project Goals</h1>
+                <h2>Model Prediction, Target Variables</h2>
+
+                <div class="key-findings">
+                    <h4>Main Research Question:</h4>
+                    <p style="font-size: 1.2em; margin-top: 15px;">
+                        Charging duration based on user type and local weather (seasons)
+                    </p>
+                </div>
+
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="content-box">
+                        <h4>Classification Task (Stage 1)</h4>
+                        <p style="margin-bottom: 15px;"><strong>Target:</strong> Charging_Duration_Binary (Flag)</p>
+                        <ul>
+                            <li><span class="highlight-green">"Long"</span> ≥ 24 hours</li>
+                            <li><span class="highlight-blue">"Short"</span> &lt; 24 hours</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-style: italic; color: #555;">
+                            "Will the charging session be long or short?"
+                        </p>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Regression Task (Stage 2)</h4>
+                        <p style="margin-bottom: 15px;"><strong>Target:</strong> Duration_Hours (Continuous)</p>
+                        <ul>
+                            <li>E.g., "6.5 h", "3.14 h", "10.2 h"</li>
+                            <li>Only for <span class="highlight-blue">short sessions</span></li>
+                            <li>Trained on &lt;24h data</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-style: italic; color: #555;">
+                            "What will be the charging duration for the user?"
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pipeline-diagram" style="margin-top: 30px;">
+                    <h4 style="text-align: center; color: #2c3e50; margin-bottom: 15px;">Why Two-Stage Approach?</h4>
+                    <p style="text-align: center; line-height: 1.8;">
+                        Pure regression fails due to outliers (sessions &gt;100h)<br>
+                        → Model predicts the mean → Poor estimates for long sessions<br>
+                        → <strong>Solution:</strong> First classify (Long/Short), then regress only on Short data
+                    </p>
+                </div>
+            </div>
+
+            <!-- NEURAL NETWORK CLASSIFICATION -->
+            <div class="slide">
+                <h1>Neural Network Classification</h1>
+                <h2>Models V1-V4, Regularization</h2>
+
+                <div class="pipeline-diagram">
+                    <h4>Architecture: Sequential Dense Networks</h4>
+                    <ul style="margin-top: 15px;">
+                        <li><strong>Input Layer:</strong> 15 features (normalized)</li>
+                        <li><strong>Hidden Layers:</strong> Dense (128 → 64 → 32 neurons)</li>
+                        <li><strong>Regularization:</strong> L2 (0.001), Dropout (0.3), BatchNorm</li>
+                        <li><strong>Output:</strong> Sigmoid (binary classification)</li>
+                        <li><strong>Loss:</strong> Binary Crossentropy (V1-V3), Focal Loss (V4)</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top: 30px;">Classification Results (NN Models)</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>AUC-ROC</th>
+                        <th>Threshold</th>
+                        <th>F1-Score</th>
+                        <th>Regularization</th>
+                    </tr>
+                    <tr>
+                        <td><strong>V1 (Best NN)</strong></td>
+                        <td><span class="highlight-green">0.7929</span></td>
+                        <td>0.637</td>
+                        <td>0.350</td>
+                        <td>L2=0.001, Dropout=0.3 (Conservative)</td>
+                    </tr>
+                    <tr>
+                        <td>V2</td>
+                        <td>0.7780</td>
+                        <td>0.607</td>
+                        <td>0.323</td>
+                        <td>L2=0.0005, Dropout=0.2 (Aggressive)</td>
+                    </tr>
+                    <tr>
+                        <td>V3</td>
+                        <td>0.7744</td>
+                        <td>0.322</td>
+                        <td>0.332</td>
+                        <td>L2=0.00025, Dropout=0.16</td>
+                    </tr>
+                    <tr>
+                        <td>V4 (Focal Loss)</td>
+                        <td>0.7763</td>
+                        <td>0.475</td>
+                        <td>0.330</td>
+                        <td>L2=0.0003, Dropout=0.15, Focal γ=2</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Key Findings:</h4>
+                    <ul>
+                        <li><strong>V1 wins</strong> — conservative regularization is better on small datasets</li>
+                        <li><strong>Threshold tuning</strong> important (0.637 vs 0.5 default → +2.5% AUC)</li>
+                        <li><strong>Focal Loss (V4)</strong> did not help — data is not extremely imbalanced</li>
+                        <li><strong>Regularization &gt; Depth</strong> — deeper networks (V2-V4) did not give better
+                            results</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TREE BASELINE COMPARISON -->
+            <div class="slide">
+                <h1>Comparison: NN vs Tree Models</h1>
+                <h2>HistGradientBoosting Baseline</h2>
+
+                <div class="stats-box" style="margin-bottom: 30px;">
+                    <p style="font-size: 1.1em;">Best Classification Model:</p>
+                    <strong>HistGradientBoosting</strong>
+                    <p>AUC-ROC: <span class="highlight-green">0.8470</span></p>
+                </div>
+
+                <h3>Comparison: NN vs Tree Models</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Neural Network (V1)</th>
+                        <th>Tree Model (Baseline)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>AUC-ROC</strong></td>
+                        <td>0.7929</td>
+                        <td><span class="highlight-green">0.8470</span> (⭐ Winner)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F1-Score</strong></td>
+                        <td>0.350</td>
+                        <td><span class="highlight-green">0.428</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recall (Long)</strong></td>
+                        <td>~48%</td>
+                        <td><span class="highlight-green">59%</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Time</strong></td>
+                        <td>~46 seconds</td>
+                        <td>~5 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpretability</strong></td>
+                        <td>Black-box</td>
+                        <td>Feature importance</td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Why Tree Models Win on Tabular Data:</h4>
+                    <ul>
+                        <li><strong>Optimized for tabular data</strong> — trees are built for this</li>
+                        <li><strong>Small dataset (6,880)</strong> — NNs need 50K+ samples</li>
+                        <li><strong>Interpretability</strong> — feature importance is straightforward with trees</li>
+                        <li><strong>Speed</strong> — 9× faster training</li>
+                        <li><strong>Good engineering judgment</strong> — knowing when not to use deep learning</li>
+                    </ul>
+                </div>
+
+                <p style="margin-top: 30px; font-style: italic; color: #555; text-align: center;">
+                    → <strong>Production model:</strong> HistGradientBoosting (Stage 1 Classifier)<br>
+                    → <strong>NN experiment:</strong> Demonstrates Lecture 4 regularization mastery
+                </p>
+            </div>
+
+            <!-- REGRESSION MODELS -->
+            <div class="slide">
+                <h1>Regression Models</h1>
+                <h2>Duration Prediction (Short Sessions &lt;24h)</h2>
+
+                <div class="pipeline-diagram">
+                    <h4>Stage 2: Train only on short sessions (3,180 samples)</h4>
+                    <p style="margin-top: 10px; line-height: 1.7;">
+                        <strong>Why?</strong> Avoid "regression to mean" bias from long outliers<br>
+                        <strong>Data:</strong> Only sessions &lt;24h (73% of dataset)<br>
+                        <strong>Target:</strong> Duration_hours (continuous)
+                    </p>
+                </div>
+
+                <h3 style="margin-top: 30px;">Regression Results</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>RMSE (hours)</th>
+                        <th>MAE (hours)</th>
+                        <th>R²</th>
+                        <th>Features</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Baseline MLP</strong></td>
+                        <td>5.991</td>
+                        <td>4.386</td>
+                        <td>0.148</td>
+                        <td>13 basic features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MLP V4 (Final Model)</strong></td>
+                        <td><span class="highlight-green">2.757</span></td>
+                        <td><span class="highlight-green">1.781</span></td>
+                        <td><span class="highlight-green">0.820</span></td>
+                        <td>24 features + 11 behavioral patterns</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Random Forest V4</strong></td>
+                        <td>2.633</td>
+                        <td>1.716</td>
+                        <td>0.835</td>
+                        <td>Same features (validation)</td>
+                    </tr>
+                </table>
+
+                <div class="metrics-grid" style="margin-top: 30px;">
+                    <div class="metric-card">
+                        <div class="metric-label">MAE</div>
+                        <div class="metric-value">1.78h</div>
+                        <div class="metric-label">Mean Absolute Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">R²</div>
+                        <div class="metric-value">0.820</div>
+                        <div class="metric-label">82% variance explained</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Improvement</div>
+                        <div class="metric-value">59%</div>
+                        <div class="metric-label">vs baseline</div>
+                    </div>
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Key Findings:</h4>
+                    <ul>
+                        <li><strong>Behavioral features:</strong> 11 new features capturing user charging patterns</li>
+                        <li><strong>Architecture:</strong> 512→256→128→64→32 neurons with progressive dropout</li>
+                        <li><strong>Huber loss:</strong> Robust to outliers in temporal data</li>
+                        <li><strong>Production-ready:</strong> MAE 1.78h across all session types</li>
+                        <li><strong>Course compliant:</strong> Pure Neural Network, no ensemble methods</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MLP V4 VISUALIZATION SLIDE -->
+            <div class="slide">
+                <h1>MLP V4: Neural Network Breakthrough</h1>
+                <div style="text-align: center; margin: 30px 0;">
+                    <img src="fig/modeling_regularized/mlp_v4_improvement.png"
+                        style="max-width: 90%; height: auto; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Advanced Behavioral Features</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                        <div>
+                            <h5 style="color: #2196F3;">User Patterns (5):</h5>
+                            <ul>
+                                <li><code>user_preferred_hour</code> — most common charging time</li>
+                                <li><code>user_weekend_pct</code> — weekend sessions %</li>
+                                <li><code>user_night_pct</code> — night sessions %</li>
+                                <li><code>user_avg_power_rate</code> — kWh/hour efficiency</li>
+                                <li><code>user_energy_std</code> — consumption variability</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: #4CAF50;">Temporal & Context (6):</h5>
+                            <ul>
+                                <li><code>garage_peak_hour</code> — busiest hour</li>
+                                <li><code>garage_capacity_proxy</code> — capacity indicator</li>
+                                <li><code>is_weekend</code> — weekend flag</li>
+                                <li><code>is_night</code> — night flag</li>
+                                <li><code>is_morning_rush</code> — morning flag</li>
+                                <li><code>energy_per_hour</code> — session power rate</li>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid" style="margin-top: 30px;">
+                    <div class="metric-card">
+                        <div class="metric-label">Architecture</div>
+                        <div class="metric-value">512→256→128→64→32</div>
+                        <div class="metric-label">5 hidden layers + BatchNorm</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Regularization</div>
+                        <div class="metric-value">Dropout</div>
+                        <div class="metric-label">0.4→0.3→0.2→0.2 progressive</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Loss Function</div>
+                        <div class="metric-value">Huber</div>
+                        <div class="metric-label">Robust to temporal outliers</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TWO-STAGE PIPELINE DEMO -->
+            <div class="slide">
+                <h1>Two-Stage Pipeline</h1>
+                <h2>Live Demo</h2>
+
+                <div class="pipeline-diagram">
+                    <div class="pipeline-stage">
+                        <h4>STAGE 1: CLASSIFICATION</h4>
+                        <ul>
+                            <li><strong>Model:</strong> HistGradientBoosting</li>
+                            <li><strong>Task:</strong> Is session Long (≥24h) or Short (&lt;24h)?</li>
+                            <li><strong>Input:</strong> 15 features (time, weather, user, location)</li>
+                            <li><strong>Output:</strong> P(Long) probability [0.0 - 1.0]</li>
+                            <li><strong>Decision:</strong> If P(Long) ≥ 0.633 → LONG, else → SHORT</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-down">↓ If SHORT ↓</div>
+
+                    <div class="pipeline-stage">
+                        <h4>STAGE 2: REGRESSION</h4>
+                        <ul>
+                            <li><strong>Model:</strong> MLP V4 Neural Network (512→256→128→64→32)</li>
+                            <li><strong>Task:</strong> How many hours?</li>
+                            <li><strong>Training data:</strong> Only &lt;24h sessions (5,031 samples)</li>
+                            <li><strong>Output:</strong> Predicted hours (continuous)</li>
+                            <li><strong>Error:</strong> ±1.78 hours average (59% improvement)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Pipeline Performance Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Stage 1 AUC</div>
+                        <div class="metric-value">0.847</div>
+                        <div class="metric-label">Excellent discrimination</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Stage 1 Recall</div>
+                        <div class="metric-value">59%</div>
+                        <div class="metric-label">Catches 59 of 105 long sessions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Stage 2 RMSE</div>
+                        <div class="metric-value">5.95h</div>
+                        <div class="metric-label">±5 hour accuracy</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Improvement</div>
+                        <div class="metric-value">29×</div>
+                        <div class="metric-label">59% vs 2% baseline</div>
+                    </div>
+                </div>
+
+                <div class="key-findings" style="margin-top: 25px;">
+                    <h4>Demo: Jupyter Notebook</h4>
+                    <ul>
+                        <li>Open: <strong>EV_Prediction_Demo.ipynb</strong></li>
+                        <li>Select real user from test set</li>
+                        <li>Extract features (time, weather, location, user history)</li>
+                        <li>Run Stage 1: Show P(Long) prediction</li>
+                        <li>If Short: Run Stage 2 for duration estimate</li>
+                        <li>Compare prediction vs actual duration</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- FINAL COMPARISON -->
+            <div class="slide">
+                <h1>Conclusion</h1>
+                <h2>Model Comparison</h2>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>NN Classification (V1)</th>
+                        <th>NN Regression (V3)</th>
+                        <th>Tree Baseline</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Target Variable</strong></td>
+                        <td>Long / Short</td>
+                        <td>Duration (hours)</td>
+                        <td>Both (Two-Stage)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Samples</strong></td>
+                        <td>5,458 (all)</td>
+                        <td>3,180 (&lt;24h only)</td>
+                        <td>5,458 / 3,180</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AUC / R²</strong></td>
+                        <td>0.7929</td>
+                        <td>R² = 0.3649</td>
+                        <td>0.8470 / R² = 0.161</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RMSE / MAE</strong></td>
+                        <td>n/a</td>
+                        <td>5.2h / 3.9h</td>
+                        <td>5.95h / 4.19h</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Time</strong></td>
+                        <td>~46 seconds</td>
+                        <td>~18 seconds</td>
+                        <td>~5 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Regularization</strong></td>
+                        <td>L2, Dropout, BatchNorm</td>
+                        <td>L2, Dropout</td>
+                        <td>Tree-based (intrinsic)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best Use Case</strong></td>
+                        <td>Learning regularization</td>
+                        <td>Feature importance study</td>
+                        <td><span class="highlight-green">Demo</span></td>
+                    </tr>
+                </table>
+
+                <div class="key-findings" style="margin-top: 30px;">
+                    <h4>Main Conclusions:</h4>
+                    <ul>
+                        <li><strong>Tree models win</strong> on tabular data (AUC 0.847 vs 0.793)</li>
+                        <li><strong>Neural Networks</strong> demonstrate mastery of regularization (Lecture 4)</li>
+                        <li><strong>V3 regression</strong> proves domain knowledge &gt; model complexity (+50% R²)</li>
+                        <li><strong>Two-Stage pipeline</strong> beats pure regression (29× improvement)</li>
+                        <li><strong>Good judgment</strong> — knowing when to use (and not use) deep learning</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- FINAL SLIDE -->
+            <div class="slide title-slide">
+                <h1>Thank You for Your Attention!</h1>
+                <p style="font-size: 1.4em; margin-top: 40px;">Cyril Steger</p>
+                <p style="font-size: 1.1em; margin-top: 20px; opacity: 0.9;">February 5, 2025 | DMI</p>
+
+                <div style="margin-top: 60px; font-size: 0.9em; opacity: 0.8;">
+                    <p><strong>Key Files:</strong></p>
+                    <p>EV_Pipeline_Evaluation.ipynb</p>
+                    <p>EV_Neural_Network_Experiment.ipynb</p>
+                    <p>EV_Prediction_Demo.ipynb</p>
+                </div>
+
+                <div style="margin-top: 40px; font-size: 0.85em; opacity: 0.7;">
+                    <p>Dataset: Trondheim EV Charging (2018-2019)</p>
+                    <p>6,880 sessions | 127 users | 42 garages</p>
+                </div>
+            </div>
+
+        </div>
+    </body>
+
+</html>

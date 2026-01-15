@@ -510,6 +510,12 @@ Train models, evaluate performance, generate visualizations.
    - Energy models cannot use duration in production
    - Need to predict both simultaneously or sequence appropriately
 
+5. **This is EXPECTED!** 
+
+Neural networks have:
+    - Random weight initialization
+    - Stochastic gradient descent (randomness in batches)
+    - Dropout (random neuron deactivation)
 ---
 
 ## 🤝 Contributing
